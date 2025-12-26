@@ -2,241 +2,219 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>سوريا الجديدة - محمد صالح</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق سوق وسند السوري</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // ===== ⚠️ ضع إعداداتك هنا بدقة شديدة =====
-        const firebaseConfig = {
-  apiKey: "AIzaSyC14Dt5V0Q1q7RYDre_TuYcuejoahhd478",
-  authDomain: "syriaapp-cf66d.firebaseapp.com",
-  projectId: "syriaapp-cf66d",
-  storageBucket: "syriaapp-cf66d.firebasestorage.app",
-  messagingSenderId: "436974106636",
-  appId: "1:436974106636:web:a4b27a28fa51f3e80b9629",
-  measurementId: "G-4T7GXLG5BH"
-};
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db;
-        window.fbUtils = { collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp };
-    </script>
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f1f5f9; }
-        .page { display: none; transition: all 0.3s ease; }
-        .page.active { display: block; }
-        .ad-card { animation: slideIn 0.4s ease-out forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: #064e3b; color: #fff;
-            text-align: center; border-radius: 50px; padding: 12px; position: fixed;
-            z-index: 1000; left: 50%; bottom: 100px; transform: translateX(-50%);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8fafc;
         }
-        #toast.show { visibility: visible; }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .nav-active {
+            color: #059669;
+            border-bottom: 3px solid #059669;
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
     </style>
 </head>
-<body class="text-slate-900">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
-    <div id="toast">مرحباً بك في تطبيق محمد صالح</div>
+    <!-- Header -->
+    <header class="bg-emerald-700 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-hand-holding-heart"></i>
+                سوق وسند السوري
+            </h1>
+            <button onclick="showNotification()" class="relative">
+                <i class="fas fa-bell text-lg"></i>
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">3</span>
+            </button>
+        </div>
+    </header>
 
-    <div class="max-w-md mx-auto bg-white min-h-screen flex flex-col shadow-xl border-x">
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto p-4 mb-20">
         
-        <!-- Header -->
-        <header class="bg-[#10b981] text-white p-4 sticky top-0 z-50 shadow-md">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-xl font-bold flex items-center gap-2">
-                        <span>سوريا الجديدة</span>
-                        <span class="text-[10px] bg-red-600 px-1.5 py-0.5 rounded animate-pulse">LIVE</span>
-                    </h1>
-                    <p class="text-[10px] text-green-100 italic">إدارة محمد صالح</p>
-                </div>
-                <div id="conn-indicator" class="flex flex-col items-end">
-                    <span class="flex items-center gap-1 text-[9px]">
-                        <span id="dot" class="w-2 h-2 bg-red-500 rounded-full"></span>
-                        <span id="status-text">أوفلاين</span>
-                    </span>
-                    <button onclick="askAdminCode()" class="mt-1 text-xs underline">لوحة التحكم</button>
-                </div>
+        <!-- Welcome Section -->
+        <div id="welcome" class="bg-white p-6 rounded-2xl card-shadow mb-6 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">أهلاً بك في بيتك السوري</h2>
+            <p class="text-gray-600">منصة لكل السوريين لتبادل الخبرات، الخدمات، والمساعدة.</p>
+        </div>
+
+        <!-- Tab: Market (سوق البركة) -->
+        <div id="market" class="tab-content active space-y-4">
+            <div class="flex justify-between items-center px-2">
+                <h3 class="text-lg font-bold text-gray-700">سوق البركة (بيع وشراء)</h3>
+                <button class="text-emerald-600 text-sm font-semibold">عرض الكل</button>
             </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
             
-            <!-- Home Page -->
-            <section id="home" class="page active">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-slate-700">الإعلانات المنشورة</h2>
-                    <button onclick="refreshData()" class="text-xs text-green-600 font-bold">تحديث 🔄</button>
-                </div>
-                
-                <div id="live-ads-container" class="space-y-3">
-                    <!-- Loading State -->
-                    <div class="text-center py-20 opacity-50">
-                        <div class="animate-spin text-3xl mb-2">⏳</div>
-                        <p class="text-sm">جاري مزامنة البيانات مع السحابة...</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Item 1 -->
+                <div class="bg-white rounded-xl overflow-hidden card-shadow">
+                    <div class="h-40 bg-gray-200 flex items-center justify-center text-gray-400">
+                         [صورة منتج سوري - مثل زيت زيتون أو حرفة يدوية]
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">زيت زيتون إدلبي أصلي</h4>
+                            <span class="text-emerald-600 font-bold">120,000 ل.س</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4"><i class="fas fa-map-marker-alt ml-1"></i> دمشق - المزة</p>
+                        <button class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition" onclick="alert('تم إرسال طلب اهتمام للبائع')">تواصل مع البائع</button>
                     </div>
                 </div>
-            </section>
 
-            <!-- Admin Page -->
-            <section id="admin" class="page">
-                <div class="bg-slate-100 p-4 rounded-2xl mb-4 border-2 border-dashed border-slate-300">
-                    <h2 class="font-bold text-red-600 mb-4">إضافة إعلان جديد (خاص بالمسؤول)</h2>
-                    <div class="space-y-3">
-                        <input id="new-title" type="text" placeholder="عنوان الإعلان" class="w-full p-3 rounded-xl border-none shadow-inner bg-white text-sm outline-none focus:ring-2 focus:ring-green-500">
-                        <textarea id="new-desc" placeholder="تفاصيل الإعلان..." class="w-full p-3 rounded-xl border-none shadow-inner bg-white text-sm h-32 outline-none focus:ring-2 focus:ring-green-500"></textarea>
-                        <button id="submit-ad" onclick="sendToCloud()" class="w-full bg-[#10b981] text-white py-4 rounded-xl font-bold shadow-lg active:scale-95 transition-all">
-                            نشر الآن على كافة الأجهزة
-                        </button>
+                <!-- Item 2 -->
+                <div class="bg-white rounded-xl overflow-hidden card-shadow">
+                    <div class="h-40 bg-gray-200 flex items-center justify-center text-gray-400">
+                         [صورة لاب توب مستعمل]
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-gray-800">لابتوب Dell للدراسة</h4>
+                            <span class="text-emerald-600 font-bold">2,500,000 ل.س</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-4"><i class="fas fa-map-marker-alt ml-1"></i> حلب - الجميلية</p>
+                        <button class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition">تواصل مع البائع</button>
                     </div>
                 </div>
-                <button onclick="showPage('home')" class="w-full text-slate-400 text-xs">إلغاء والعودة للرئيسية</button>
-            </section>
-
-        </main>
-
-        <!-- Navigation -->
-        <nav class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around p-3 shadow-2xl z-50">
-            <button onclick="showPage('home')" class="flex flex-col items-center gap-1 text-green-600">
-                <span class="text-2xl">🏛️</span>
-                <span class="text-[10px] font-bold">الرئيسية</span>
-            </button>
-            <button onclick="askAdminCode()" class="flex flex-col items-center gap-1 text-slate-400">
-                <span class="text-2xl">⚙️</span>
-                <span class="text-[10px] font-bold">الإدارة</span>
-            </button>
-        </nav>
-
-        <!-- Password Modal -->
-        <div id="pwd-modal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-6 z-[1000]">
-            <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl scale-in">
-                <div class="text-4xl mb-4">🔐</div>
-                <h3 class="font-bold text-lg mb-2">لوحة المسؤول</h3>
-                <input id="pwd-input" type="password" placeholder="كود الدخول" class="w-full p-3 border-2 border-slate-100 rounded-xl text-center text-xl font-bold tracking-widest outline-none focus:border-green-500">
-                <button onclick="verifyAndEnter()" class="w-full bg-[#10b981] text-white mt-4 py-3 rounded-xl font-bold shadow-md">دخول</button>
-                <button onclick="closeModal()" class="w-full text-slate-400 mt-3 text-xs">إلغاء</button>
             </div>
         </div>
 
+        <!-- Tab: Support (سند) -->
+        <div id="support" class="tab-content space-y-4">
+            <h3 class="text-lg font-bold text-gray-700 px-2">مبادرات سند (مساعدة وخبرات)</h3>
+            
+            <div class="bg-blue-50 border-r-4 border-blue-500 p-4 rounded-lg mb-4">
+                <p class="text-sm text-blue-800 font-medium">مبادرة اليوم: طبيب سوري في ألمانيا يقدم استشارات مجانية عبر التطبيق اليوم.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl card-shadow border border-gray-100">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 font-bold">أ.م</div>
+                        <div>
+                            <h4 class="font-bold">أحمد محمود</h4>
+                            <p class="text-xs text-gray-500">مهندس برمجيات</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-3">أقدم دروس تقوية مجانية في البرمجة للطلاب السوريين المستجدين. تواصلوا معي.</p>
+                    <div class="flex gap-2">
+                        <button class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm">طلب المساعدة</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl card-shadow border border-gray-100">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold">ن.س</div>
+                        <div>
+                            <h4 class="font-bold">نور الشام</h4>
+                            <p class="text-xs text-gray-500">مبادرة مجتمعية</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-3">نبحث عن متطوعين لتوزيع وجبات إفطار في ريف حمص. من يرغب بالمشاركة؟</p>
+                    <button class="w-full border border-emerald-600 text-emerald-600 py-2 rounded-lg text-sm font-bold">تطوع الآن</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Guide (دليلنا) -->
+        <div id="guide" class="tab-content space-y-4">
+            <h3 class="text-lg font-bold text-gray-700 px-2">الدليل الخدمي</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white p-4 rounded-xl text-center card-shadow cursor-pointer">
+                    <i class="fas fa-stethoscope text-red-500 text-2xl mb-2"></i>
+                    <p class="text-sm font-bold">أطباء وصيدليات</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl text-center card-shadow cursor-pointer">
+                    <i class="fas fa-bus text-blue-500 text-2xl mb-2"></i>
+                    <p class="text-sm font-bold">مواصلات ونقل</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl text-center card-shadow cursor-pointer">
+                    <i class="fas fa-graduation-cap text-purple-500 text-2xl mb-2"></i>
+                    <p class="text-sm font-bold">منح تعليمية</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl text-center card-shadow cursor-pointer">
+                    <i class="fas fa-gavel text-gray-600 text-2xl mb-2"></i>
+                    <p class="text-sm font-bold">استشارات قانونية</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 flex justify-around items-center z-50">
+        <button onclick="switchTab('market', this)" class="nav-item flex flex-col items-center gap-1 p-2 nav-active">
+            <i class="fas fa-store text-xl"></i>
+            <span class="text-[10px]">سوق البركة</span>
+        </button>
+        <button onclick="switchTab('support', this)" class="nav-item flex flex-col items-center gap-1 p-2 text-gray-400">
+            <i class="fas fa-hands-helping text-xl"></i>
+            <span class="text-[10px]">سند</span>
+        </button>
+        <button onclick="switchTab('guide', this)" class="nav-item flex flex-col items-center gap-1 p-2 text-gray-400">
+            <i class="fas fa-book-open text-xl"></i>
+            <span class="text-[10px]">دليلنا</span>
+        </button>
+        <button onclick="alert('الملف الشخصي قيد التطوير')" class="nav-item flex flex-col items-center gap-1 p-2 text-gray-400">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-[10px]">حسابي</span>
+        </button>
+    </nav>
+
+    <!-- Custom Notification Box (Instead of alert) -->
+    <div id="notification" class="fixed top-20 left-1/2 -translate-x-1/2 bg-emerald-800 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-opacity pointer-events-none z-[60]">
+        ليس لديك إشعارات جديدة حالياً
     </div>
 
     <script>
-        // إظهار الترحيب
-        window.onload = function() {
-            const t = document.getElementById("toast");
-            t.className = "show";
-            setTimeout(() => { t.className = ""; }, 3000);
+        function switchTab(tabId, el) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
             
-            // البدء في مراقبة الاتصال
-            initApp();
-        };
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Update Nav Icons
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('nav-active');
+                item.classList.add('text-gray-400');
+            });
+            el.classList.add('nav-active');
+            el.classList.remove('text-gray-400');
 
-        function initApp() {
-            let retry = setInterval(() => {
-                if(window.db) {
-                    clearInterval(retry);
-                    document.getElementById('dot').classList.replace('bg-red-500', 'bg-green-500');
-                    document.getElementById('status-text').innerText = "متصل مباشر";
-                    startLiveStreaming();
-                }
-            }, 500);
-        }
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        function askAdminCode() { document.getElementById('pwd-modal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('pwd-modal').classList.add('hidden'); }
-
-        function verifyAndEnter() {
-            if(document.getElementById('pwd-input').value === "09962") {
-                closeModal();
-                showPage('admin');
-                document.getElementById('pwd-input').value = "";
-            } else { alert("الكود خاطئ!"); }
-        }
-
-        // إرسال البيانات بختم زمني من السيرفر (Server Timestamp)
-        async function sendToCloud() {
-            const title = document.getElementById('new-title').value;
-            const desc = document.getElementById('new-desc').value;
-            if(!title) return alert("يرجى كتابة العنوان");
-
-            const btn = document.getElementById('submit-ad');
-            btn.disabled = true;
-            btn.innerText = "جاري البث للسحابة...";
-
-            try {
-                await window.fbUtils.addDoc(window.fbUtils.collection(window.db, "syria_ads"), {
-                    title: title,
-                    description: desc,
-                    createdAt: window.fbUtils.serverTimestamp(), // ختم وقت حقيقي من جوجل
-                    author: "محمد صالح"
-                });
-                document.getElementById('new-title').value = "";
-                document.getElementById('new-desc').value = "";
-                showPage('home');
-            } catch (e) {
-                alert("خطأ في الاتصال: " + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "نشر الآن على كافة الأجهزة";
+            // Hide welcome on other tabs
+            if(tabId !== 'market') {
+                document.getElementById('welcome').style.display = 'none';
+            } else {
+                document.getElementById('welcome').style.display = 'block';
             }
         }
 
-        // جلب البيانات بنظام Live Snapshot (أهم جزء)
-        function startLiveStreaming() {
-            const q = window.fbUtils.query(
-                window.fbUtils.collection(window.db, "syria_ads"), 
-                window.fbUtils.orderBy("createdAt", "desc"),
-                window.fbUtils.limit(50)
-            );
-
-            // الاستماع الحي (onSnapshot) يضمن ظهور الإعلان عند الجميع فوراً
-            window.fbUtils.onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('live-ads-container');
-                container.innerHTML = "";
-                
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-center text-slate-400 py-10 text-xs">لا يوجد إعلانات حالية</p>';
-                    return;
-                }
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const card = `
-                        <div class="ad-card bg-white p-4 rounded-2xl shadow-sm border border-slate-100 border-r-4 border-green-500">
-                            <h4 class="font-bold text-slate-800">${data.title}</h4>
-                            <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">${data.description || ''}</p>
-                            <div class="mt-3 flex justify-between items-center text-[8px] text-slate-300 font-bold uppercase tracking-widest">
-                                <span>بواسطة: ${data.author || 'محمد صالح'}</span>
-                                <span>مُحدّث الآن</span>
-                            </div>
-                        </div>`;
-                    container.innerHTML += card;
-                });
-            }, (error) => {
-                console.error("Snapshot Error:", error);
-                document.getElementById('live-ads-container').innerHTML = '<p class="text-red-500 text-center text-xs">يجب تفعيل القواعد (Rules) في Firebase Console</p>';
-            });
-        }
-
-        function refreshData() {
-            location.reload();
+        function showNotification() {
+            const notify = document.getElementById('notification');
+            notify.style.opacity = '1';
+            setTimeout(() => {
+                notify.style.opacity = '0';
+            }, 3000);
         }
     </script>
 </body>
