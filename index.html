@@ -1,76 +1,134 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق السوريين التجريبي</title>
-    <style>
-        body { font-family: Arial, sans-serif; direction: rtl; margin: 0; padding: 0; background: #f0f0f0; }
-        header { background: #3498db; color: white; padding: 1em; text-align: center; }
-        main { padding: 2em; }
-        button { padding: 0.5em 1em; margin: 0.5em 0; }
-        .hidden { display: none; }
-        .content-box { background: white; padding: 1em; margin-bottom: 1em; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1);}
-    </style>
-</head>
-<body>
-    <header>
-        <h1>تطبيق السوريين التجريبي</h1>
-    </header>
-    <main>
-        <h2>مرحباً بك! 🌟</h2>
-        <div>
-            <label>أدخل كود المالك: </label>
-            <input type="password" id="ownerCode" placeholder="كود المالك">
-            <button onclick="loginOwner()">دخول المالك</button>
-        </div>
+syrian_app/
+├── app.py           # الخادم الرئيسي
+├── database.db      # قاعدة البيانات
+├── templates/
+│   ├── index.html   # الصفحة الرئيسية
+│   ├── login.html   # صفحة تسجيل الدخول
+│   ├── dashboard.html # لوحة تحكم المالك والمشرفين
+│   └── add_post.html # صفحة إضافة منشور
+├── static/
+│   └── style.css    # ملف التنسيق
+└── README.md        # تعليمات التشغيل
+-- database_setup.sql
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL
+);
 
-        <div id="ownerPanel" class="hidden">
-            <h3>لوحة المالك</h3>
-            <button onclick="addContent()">إضافة محتوى</button>
-            <button onclick="addModerator()">إضافة مشرف</button>
-            <div id="ownerActions"></div>
-        </div>
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    content TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+);
 
-        <div id="contentArea">
-            <h3>المحتوى المتاح:</h3>
-        </div>
-    </main>
+CREATE TABLE permissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role TEXT UNIQUE,
+    can_add_posts INTEGER DEFAULT 0,
+    can_delete_posts INTEGER DEFAULT 0,
+    can_manage_users INTEGER DEFAULT 0
+);
 
-    <script>
-        const ownerCodeCorrect = "09962";
-        const contentArea = document.getElementById('contentArea');
-        const ownerPanel = document.getElementById('ownerPanel');
+-- إضافة المالك الافتراضي
+INSERT INTO users (username, password, role) VALUES ('owner', '09962', 'owner');
 
-        function loginOwner() {
-            const code = document.getElementById('ownerCode').value;
-            if(code === ownerCodeCorrect) {
-                ownerPanel.classList.remove('hidden');
-                alert("تم تسجيل الدخول كمالك التطبيق!");
-            } else {
-                alert("كود غير صحيح!");
-            }
-        }
+-- إعداد الصلاحيات
+INSERT INTO permissions (role, can_add_posts, can_delete_posts, can_manage_users)
+VALUES 
+('owner', 1, 1, 1),
+('admin', 1, 1, 0),
+('user', 1, 0, 0);
 
-        function addContent() {
-            const content = prompt("أدخل المحتوى الجديد:");
-            if(content) {
-                const box = document.createElement('div');
-                box.classList.add('content-box');
-                box.textContent = content;
-                contentArea.appendChild(box);
-            }
-        }
+# app.py
+from flask import Flask, render_template, request, redirect, session
+import sqlite3
 
-        function addModerator() {
-            const mod = prompt("أدخل اسم المشرف الجديد:");
-            if(mod) {
-                const actionDiv = document.getElementById('ownerActions');
-                const p = document.createElement('p');
-                p.textContent = `تم إضافة المشرف: ${mod}`;
-                actionDiv.appendChild(p);
-            }
-        }
-    </script>
-</body>
-</html>
+app = Flask(__name__)
+app.secret_key = 'secret_key_here'
+
+DB = 'database.db'
+
+def get_db():
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/')
+def index():
+    conn = get_db()
+    posts = conn.execute("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id").fetchall()
+    conn.close()
+    return render_template('index.html', posts=posts)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        conn = get_db()
+        user = conn.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password)).fetchone()
+        conn.close()
+        if user:
+            session['user_id'] = user['id']
+            session['role'] = user['role']
+            return redirect('/dashboard')
+        return "خطأ في تسجيل الدخول"
+    return render_template('login.html')
+
+@app.route('/dashboard')
+def dashboard():
+    if 'role' not in session:
+        return redirect('/login')
+    conn = get_db()
+    posts = conn.execute("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id").fetchall()
+    conn.close()
+    return render_template('dashboard.html', posts=posts, role=session['role'])
+
+@app.route('/add_post', methods=['GET', 'POST'])
+def add_post():
+    if 'role' not in session:
+        return redirect('/login')
+    if request.method == 'POST':
+        content = request.form['content']
+        conn = get_db()
+        conn.execute("INSERT INTO posts (user_id, content) VALUES (?, ?)", (session['user_id'], content))
+        conn.commit()
+        conn.close()
+        return redirect('/dashboard')
+    return render_template('add_post.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
+    
+if __name__ == '__main__':
+    app.run(debug=True)
+
+<form method="post">
+  اسم المستخدم: <input name="username"><br>
+  كلمة المرور: <input type="password" name="password"><br>
+  <button type="submit">تسجيل الدخول</button>
+</form>
+
+<h1>أهلاً بك في تطبيق السوريين</h1>
+{% for post in posts %}
+  <p><b>{{ post.username }}:</b> {{ post.content }}</p>
+{% endfor %}
+<a href="/login">تسجيل الدخول</a>
+
+<h1>لوحة التحكم ({{ role }})</h1>
+<a href="/add_post">إضافة منشور</a> | <a href="/logout">تسجيل الخروج</a>
+<hr>
+{% for post in posts %}
+  <p><b>{{ post.username }}:</b> {{ post.content }}</p>
+{% endfor %}
+<form method="post">
+<textarea name="content" placeholder="أدخل محتوى المنشور"></textarea><br>
+<button type="submit">نشر</button>
+</form>
+
