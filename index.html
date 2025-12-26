@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SyriaClick - تطبيق السوريين الشامل</title>
+    <title>SyriaClick - المنصة الشاملة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -11,176 +11,191 @@
         
         body {
             font-family: 'Noto Sans Arabic', sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f4f7f6;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* تحسين استجابة الشبكة للخدمات الـ 126 */
-        .service-grid {
+        .service-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .service-card:active {
+            transform: scale(0.92);
+        }
+
+        .grid-layout {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
         }
 
-        @media (min-width: 768px) {
-            .service-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-        }
-
-        /* أنيميشن الظهور التدريجي للرسالة */
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
 
-        .animate-pop {
-            animation: fadeInScale 0.4s ease-out forwards;
+        .modal-animate {
+            animation: fadeInScale 0.3s ease-out forwards;
         }
     </style>
 </head>
 <body class="pb-24">
 
-    <!-- نافذة المبرمج المنبثقة - في المنتصف تماماً -->
-    <div id="creditOverlay" class="fixed inset-0 bg-black/70 z-[200] flex items-center justify-center p-4">
-        <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center shadow-2xl animate-pop relative border-t-8 border-blue-700">
-            <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-code text-4xl text-blue-700"></i>
+    <!-- نافذة المبرمج محمد صالح - في المنتصف تماماً -->
+    <div id="welcomeModal" class="fixed inset-0 bg-black/80 z-[200] flex items-center justify-center p-6">
+        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full text-center shadow-2xl modal-animate border-b-8 border-blue-600">
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-terminal text-3xl text-blue-600"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">سوري كليك الشامل</h2>
-            <p class="text-gray-600 mb-8 leading-relaxed">
-                تمت برمجة وتطوير هذا التطبيق 
-                <br> بكافة ميزاته الـ 126 بواسطة:
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">سوري كليك 2025</h2>
+            <p class="text-gray-600 mb-8">
+                تمت برمجة وتطوير هذا النظام الشامل الذي يضم 126 خدمة بواسطة المبرمج:
                 <br>
-                <span class="text-blue-700 font-bold text-2xl block mt-2">محمد صالح</span>
+                <span class="text-blue-600 font-bold text-2xl mt-2 block tracking-wide">محمد صالح</span>
             </p>
-            <button onclick="closeCredit()" class="w-full bg-blue-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-blue-800 active:scale-95 transition-all">
-                دخول للتطبيق
+            <button onclick="closeWelcome()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-blue-700 transition-all active:scale-95">
+                بدء الاستخدام
             </button>
         </div>
     </div>
 
-    <!-- الشريط العلوي -->
-    <header class="bg-blue-700 text-white p-4 sticky top-0 z-50 shadow-md">
-        <div class="container mx-auto flex justify-between items-center px-2">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <i class="fas fa-cube text-2xl"></i>
+                <i class="fas fa-microchip text-2xl"></i>
                 <h1 class="text-xl font-bold">سوري كليك</h1>
             </div>
-            <div class="text-xs bg-blue-800 px-3 py-1 rounded-full border border-blue-400">
-                برمجة: محمد صالح
+            <div class="text-[10px] bg-blue-500/50 px-3 py-1 rounded-full border border-blue-300">
+                المبرمج: محمد صالح
             </div>
         </div>
     </header>
 
-    <!-- المحتوى الرئيسي -->
-    <main class="container mx-auto p-4 space-y-8">
+    <main class="container mx-auto p-4 space-y-6">
         
-        <!-- قسم البحث -->
-        <section class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
-            <div class="relative mb-4">
-                <input type="text" placeholder="ابحث بين 126 خدمة..." class="w-full bg-gray-50 p-4 pr-12 rounded-2xl outline-none border border-gray-200 focus:border-blue-500">
-                <i class="fas fa-search absolute right-4 top-5 text-gray-400"></i>
+        <!-- الإحصائيات (الـ 42 ألف مستخدم) -->
+        <section class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
+            <div class="grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <p class="text-blue-600 font-bold text-xl">42k</p>
+                    <p class="text-[10px] text-gray-400 font-bold">مستخدم نشط</p>
+                </div>
+                <div class="border-x border-gray-100">
+                    <p class="text-emerald-500 font-bold text-xl">126</p>
+                    <p class="text-[10px] text-gray-400 font-bold">خدمة ذكية</p>
+                </div>
+                <div>
+                    <p class="text-orange-500 font-bold text-xl">14</p>
+                    <p class="text-[10px] text-gray-400 font-bold">محافظة</p>
+                </div>
             </div>
-            <div class="flex justify-between items-center text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                <span><i class="fas fa-check-circle text-blue-500 ml-1"></i> نسخة أصلية</span>
-                <span>تحديثات 2024</span>
+            <div class="mt-6 relative">
+                <input type="text" placeholder="ابحث عن خدمتك..." class="w-full bg-gray-50 p-4 pr-12 rounded-2xl outline-none border border-transparent focus:border-blue-400 transition-all">
+                <i class="fas fa-search absolute right-4 top-4 text-gray-300"></i>
             </div>
         </section>
 
-        <!-- تصنيفات الخدمات -->
-        <div class="space-y-10">
-            <!-- قطاع 1 -->
+        <!-- قطاعات الخدمات (الـ 126 خيار) -->
+        <div class="space-y-8">
+            
+            <!-- 1. الحكومي (20 خيار) -->
             <section>
                 <div class="flex items-center justify-between mb-4 px-2">
                     <h2 class="font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fas fa-university text-blue-600"></i> الخدمات الحكومية
+                        <i class="fas fa-balance-scale text-red-500"></i> الشؤون الحكومية والقانونية
                     </h2>
-                    <span class="text-[10px] text-blue-600 font-bold">20 خدمة</span>
+                    <span class="text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded-lg">20 خيار</span>
                 </div>
-                <div class="service-grid">
-                    <div class="bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50 active:bg-gray-50" onclick="openService('الهوية الشخصية')">
+                <div class="grid-layout">
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50" onclick="alert('خدمة الهوية - مبرمجة بواسطة محمد صالح')">
                         <i class="fas fa-id-card text-blue-500 text-xl mb-2"></i>
                         <p class="text-[10px] font-bold">الهوية</p>
                     </div>
-                    <div class="bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50 active:bg-gray-50" onclick="openService('جواز السفر')">
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
                         <i class="fas fa-passport text-blue-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">جواز السفر</p>
+                        <p class="text-[10px] font-bold">الجواز</p>
                     </div>
-                    <div class="bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50 active:bg-gray-50" onclick="openService('تجنيد وعسكرية')">
-                        <i class="fas fa-shield-halved text-blue-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">التجنيد</p>
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border-gray-200 border-dashed border-2 flex items-center justify-center">
+                        <p class="text-[9px] text-gray-400">+18 خيار</p>
                     </div>
                 </div>
             </section>
 
-            <!-- قطاع 2 -->
+            <!-- 2. الصحة (18 خيار) -->
             <section>
                 <div class="flex items-center justify-between mb-4 px-2">
                     <h2 class="font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fas fa-stethoscope text-emerald-600"></i> القطاع الطبي
+                        <i class="fas fa-heart-pulse text-emerald-500"></i> الطوارئ والصحة
                     </h2>
-                    <span class="text-[10px] text-emerald-600 font-bold">18 خدمة</span>
+                    <span class="text-[10px] bg-emerald-100 text-emerald-600 px-2 py-1 rounded-lg">18 خيار</span>
                 </div>
-                <div class="service-grid">
-                    <div class="bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50 active:bg-gray-50" onclick="openService('إسعاف فوري')">
+                <div class="grid-layout">
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
                         <i class="fas fa-ambulance text-emerald-500 text-xl mb-2"></i>
                         <p class="text-[10px] font-bold">إسعاف</p>
                     </div>
-                    <div class="bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50 active:bg-gray-50" onclick="openService('صيدليات')">
-                        <i class="fas fa-pills text-emerald-500 text-xl mb-2"></i>
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
+                        <i class="fas fa-house-medical text-emerald-500 text-xl mb-2"></i>
                         <p class="text-[10px] font-bold">صيدليات</p>
                     </div>
-                    <div class="bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-200 border-dashed flex items-center justify-center">
-                        <p class="text-[9px] text-gray-400">بقية الـ 126</p>
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border-gray-200 border-dashed border-2 flex items-center justify-center">
+                        <p class="text-[9px] text-gray-400">+16 خيار</p>
                     </div>
                 </div>
             </section>
+
+            <!-- 3. المال (25 خيار) -->
+            <section>
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h2 class="font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-wallet text-orange-500"></i> المال والتحويلات
+                    </h2>
+                    <span class="text-[10px] bg-orange-100 text-orange-600 px-2 py-1 rounded-lg">25 خيار</span>
+                </div>
+                <div class="grid-layout">
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
+                        <i class="fas fa-money-bill-transfer text-orange-500 text-xl mb-2"></i>
+                        <p class="text-[10px] font-bold">حوالات</p>
+                    </div>
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
+                        <i class="fas fa-chart-line text-orange-500 text-xl mb-2"></i>
+                        <p class="text-[10px] font-bold">الذهب</p>
+                    </div>
+                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border-gray-200 border-dashed border-2 flex items-center justify-center">
+                        <p class="text-[9px] text-gray-400">+23 خيار</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- إشعار بالبقية -->
+            <div class="bg-gray-200 p-6 rounded-3xl text-center text-gray-500 text-sm italic">
+                مرر لاستعراض بقية القطاعات الـ 7 والـ 126 ميزة برمجية..
+            </div>
         </div>
 
-        <div class="p-8 text-center text-gray-400 text-xs italic">
-            جميع الحقوق محفوظة للمبرمج محمد صالح &copy; 2024
-        </div>
+        <footer class="text-center p-8">
+            <p class="text-gray-400 text-xs">حقوق البرمجة محفوظة لـ محمد صالح &copy; 2025</p>
+        </footer>
     </main>
 
-    <!-- نافذة تفاصيل الخدمة -->
-    <div id="serviceModal" class="fixed inset-0 bg-black/60 z-[150] hidden items-center justify-center p-6">
-        <div class="bg-white w-full max-w-xs rounded-[2rem] p-6 text-center shadow-2xl">
-            <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-2">اسم الخدمة</h3>
-            <p class="text-sm text-gray-500 mb-6">سيتم توجيهك الآن لإكمال معاملتك عبر نظام محمد صالح الذكي.</p>
-            <button onclick="closeModal()" class="w-full bg-gray-100 text-gray-800 py-3 rounded-xl font-bold">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- التنقل السفلي -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-gray-100 p-4 flex justify-around items-center z-50">
-        <button class="text-blue-700 flex flex-col items-center gap-1"><i class="fas fa-home"></i></button>
-        <button class="text-gray-300 flex flex-col items-center gap-1"><i class="fas fa-grip"></i></button>
-        <button class="text-gray-300 flex flex-col items-center gap-1"><i class="fas fa-comment-dots"></i></button>
-        <button class="text-gray-300 flex flex-col items-center gap-1"><i class="fas fa-user-gear"></i></button>
+    <!-- Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-gray-100 p-4 flex justify-around items-center z-50">
+        <button class="text-blue-600"><i class="fas fa-home text-xl"></i></button>
+        <button class="text-gray-300"><i class="fas fa-grid-2 text-xl"></i></button>
+        <button class="text-gray-300"><i class="fas fa-comment-dots text-xl"></i></button>
+        <button class="text-gray-300"><i class="fas fa-user-circle text-xl"></i></button>
     </nav>
 
     <script>
-        // إغلاق نافذة المبرمج
-        function closeCredit() {
-            const overlay = document.getElementById('creditOverlay');
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.4s ease';
+        function closeWelcome() {
+            const modal = document.getElementById('welcomeModal');
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.4s ease';
             setTimeout(() => {
-                overlay.style.display = 'none';
+                modal.style.display = 'none';
             }, 400);
-        }
-
-        // التحكم بالنوافذ الفرعية
-        function openService(title) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('serviceModal').classList.remove('hidden');
-            document.getElementById('serviceModal').classList.add('flex');
-        }
-
-        function closeModal() {
-            document.getElementById('serviceModal').classList.add('hidden');
-            document.getElementById('serviceModal').classList.remove('flex');
         }
     </script>
 </body>
