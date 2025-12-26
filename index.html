@@ -7,14 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- ربط المكتبات السحابية -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // =============================================================
-        //  ⚠️ الجزء المطلوب: ضَع إعدادات فايبربيز الخاصة بك بين القوسين أدناه
-        // =============================================================
+        // ===== ⚠️ تأكد من ملء هذه البيانات بدقة من Firebase Console =====
         const firebaseConfig = {
   apiKey: "AIzaSyC14Dt5V0Q1q7RYDre_TuYcuejoahhd478",
   authDomain: "syriaapp-cf66d.firebaseapp.com",
@@ -23,31 +20,31 @@
   messagingSenderId: "436974106636",
   appId: "1:436974106636:web:a4b27a28fa51f3e80b9629",
   measurementId: "G-4T7GXLG5BH"
-};
-        // =============================================================
+        }
 
-        // تهيئة قاعدة البيانات
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db;
-        window.dbFunctions = { collection, addDoc, onSnapshot, query, orderBy };
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            window.db = db;
+            window.dbFunctions = { collection, addDoc, onSnapshot, query, orderBy };
+            console.log("Firebase Connected Successfully");
+        } catch (error) {
+            console.error("Firebase Initialization Error:", error);
+        }
     </script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f0fdf4; touch-action: manipulation; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f0fdf4; -webkit-tap-highlight-color: transparent; }
         .page { display: none; }
-        .page.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         #toast {
             visibility: hidden; min-width: 280px; background-color: #064e3b; color: #fff;
-            text-align: center; border-radius: 16px; padding: 16px; position: fixed;
+            text-align: center; border-radius: 12px; padding: 16px; position: fixed;
             z-index: 500; left: 50%; top: 20px; transform: translateX(-50%);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {top: 0; opacity: 0;} to {top: 20px; opacity: 1;} }
-        @keyframes fadeout { from {top: 20px; opacity: 1;} to {top: 0; opacity: 0;} }
+        #toast.show { visibility: visible; animation: slideDown 0.5s; }
+        @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
     </style>
 </head>
 <body class="text-gray-900 overflow-x-hidden">
@@ -56,205 +53,70 @@
 
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
         
-        <!-- الهيدر الرئيسي -->
-        <header class="bg-[#10b981] p-5 text-white shadow-lg sticky top-0 z-50">
+        <header class="bg-[#10b981] p-5 text-white shadow-lg sticky top-0 z-50 rounded-b-2xl">
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-xl font-bold">سوريا الجديدة 🇸🇾</h1>
-                    <p class="text-[10px] bg-black/20 px-2 py-0.5 rounded mt-1">بإشراف: محمد صالح</p>
+                    <p class="text-[10px] bg-black/20 px-2 py-0.5 rounded mt-1">المبرمج: محمد صالح</p>
                 </div>
-                <button onclick="askAdminCode()" class="bg-white/20 p-2 rounded-full hover:bg-white/30 transition">
-                    ⚙️
-                </button>
+                <button onclick="askAdminCode()" class="bg-white/20 p-2 rounded-full">⚙️</button>
             </div>
-            <div class="mt-3 text-[10px] text-green-100 font-bold animate-pulse">● هذا تطبيق تجريبي</div>
+            <div id="connection-status" class="mt-2 text-[9px] text-green-100 flex items-center gap-1">
+                <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                جاري فحص الاتصال...
+            </div>
         </header>
 
-        <!-- المحتوى -->
-        <main class="flex-1 overflow-y-auto p-4 pb-28">
-            
-            <!-- الصفحة الرئيسية -->
-            <section id="home" class="page active space-y-4">
-                <!-- الأقسام -->
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="showPage('jobs')" class="bg-white border p-5 rounded-2xl shadow-sm text-center active:scale-95 transition border-t-4 border-green-500">
-                        <span class="text-3xl">💼</span>
-                        <p class="text-xs font-bold mt-2">الوظائف</p>
-                    </button>
-                    <button onclick="showPage('market')" class="bg-white border p-5 rounded-2xl shadow-sm text-center active:scale-95 transition border-t-4 border-blue-500">
-                        <span class="text-3xl">🛒</span>
-                        <p class="text-xs font-bold mt-2">السوق</p>
-                    </button>
-                    <button onclick="showPage('realestate')" class="bg-white border p-5 rounded-2xl shadow-sm text-center active:scale-95 transition border-t-4 border-red-500">
-                        <span class="text-3xl">🏠</span>
-                        <p class="text-xs font-bold mt-2">العقارات</p>
-                    </button>
-                    <button onclick="showPage('cars')" class="bg-white border p-5 rounded-2xl shadow-sm text-center active:scale-95 transition border-t-4 border-yellow-500">
-                        <span class="text-3xl">🚗</span>
-                        <p class="text-xs font-bold mt-2">السيارات</p>
-                    </button>
+        <main class="flex-1 p-4 pb-24">
+            <!-- الرئيسية -->
+            <section id="home" class="page active">
+                <div class="bg-green-50 p-3 rounded-xl border border-green-100 mb-4 text-center">
+                    <p class="text-green-700 font-bold text-xs italic">هذا تطبيق تجريبي</p>
                 </div>
-
-                <!-- شريط الإعلانات الحية -->
-                <div class="bg-gray-50 rounded-2xl p-4 border border-green-100">
-                    <h3 class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">آخر الإعلانات المضافة</h3>
-                    <div id="live-ads" class="space-y-3">
-                        <!-- الإعلانات ستظهر هنا برمجياً من قاعدة البيانات -->
-                        <div class="text-center py-4">
-                            <p class="text-[10px] text-gray-400">في انتظار ربط قاعدة البيانات لإظهار المحتوى المباشر...</p>
-                        </div>
+                
+                <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                    📢 إعلانات حية (مباشر)
+                </h3>
+                
+                <div id="live-ads" class="space-y-3">
+                    <!-- سيتم تحميل المحتوى هنا -->
+                    <div class="text-center py-10 text-gray-400">
+                        <div class="animate-spin inline-block w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full mb-2"></div>
+                        <p class="text-xs">جاري سحب البيانات من السحابة...</p>
                     </div>
                 </div>
             </section>
 
-            <!-- لوحة التحكم -->
+            <!-- لوحة المسؤول -->
             <section id="admin" class="page space-y-4">
-                <div class="flex items-center justify-between bg-red-50 p-4 rounded-xl border border-red-100">
-                    <h2 class="text-red-700 font-bold">لوحة المسؤول 🛠️</h2>
-                    <button onclick="showPage('home')" class="text-[10px] bg-red-600 text-white px-3 py-1 rounded">خروج</button>
+                <div class="bg-red-600 text-white p-4 rounded-xl shadow-md">
+                    <h2 class="font-bold">لوحة التحكم 🛠️</h2>
+                    <p class="text-[10px] opacity-80 text-white">تحكم كامل بالإعلانات المنشورة</p>
                 </div>
-
-                <div class="bg-white border p-4 rounded-2xl shadow-sm space-y-4">
-                    <h3 class="text-sm font-bold">نشر إعلان جديد</h3>
-                    <input id="ad-title" type="text" placeholder="ماذا تريد أن تعلن؟" class="w-full p-3 bg-gray-50 border rounded-xl text-sm focus:ring-2 focus:ring-green-500 outline-none">
-                    <select id="ad-category" class="w-full p-3 bg-gray-50 border rounded-xl text-sm">
-                        <option value="jobs">قسم الوظائف</option>
-                        <option value="market">قسم السوق</option>
-                        <option value="realestate">قسم العقارات</option>
-                        <option value="cars">قسم السيارات</option>
-                    </select>
-                    <textarea id="ad-desc" placeholder="تفاصيل إضافية..." class="w-full p-3 bg-gray-50 border rounded-xl text-sm h-24"></textarea>
-                    <button onclick="postToFirebase()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg active:scale-95 transition">
-                        نشر الإعلان للجميع 🚀
+                <div class="bg-white border-2 border-dashed border-gray-200 p-4 rounded-xl space-y-3">
+                    <input id="ad-title" type="text" placeholder="عنوان الإعلان" class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
+                    <textarea id="ad-desc" placeholder="تفاصيل الإعلان..." class="w-full p-3 bg-gray-50 border rounded-lg text-sm h-24"></textarea>
+                    <button id="post-btn" onclick="postToFirebase()" class="w-full bg-[#10b981] text-white py-4 rounded-xl font-bold shadow-lg active:scale-95 transition">
+                        نشر الإعلان الآن
                     </button>
                 </div>
+                <button onclick="showPage('home')" class="w-full text-gray-500 text-xs">خروج</button>
             </section>
-
         </main>
 
-        <!-- نافذة الكود السري -->
-        <div id="code-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-6 z-[600]">
-            <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
-                <div class="text-4xl mb-4">🔐</div>
-                <h3 class="font-bold text-lg mb-2">منطقة المسؤولين</h3>
-                <p class="text-[10px] text-gray-400 mb-4">يُرجى إدخال الكود السري للدخول</p>
-                <input id="admin-code" type="tel" placeholder="****" class="w-full p-4 border rounded-2xl text-center text-3xl font-bold tracking-[10px] bg-gray-50">
-                <button onclick="verifyCode()" class="w-full bg-[#10b981] text-white mt-4 py-4 rounded-2xl font-bold">دخول</button>
-                <button onclick="closeCodeModal()" class="w-full text-gray-400 mt-4 text-xs font-medium">إلغاء</button>
-            </div>
-        </div>
-
         <!-- القائمة السفلية -->
-        <nav class="absolute bottom-0 w-full bg-white/90 backdrop-blur-md border-t flex justify-around p-3 z-50">
-            <button onclick="showPage('home')" class="flex flex-col items-center gap-1 text-green-600">
+        <nav class="fixed bottom-0 max-w-md w-full bg-white/90 backdrop-blur-md border-t flex justify-around p-3 z-50">
+            <button onclick="showPage('home')" class="flex flex-col items-center text-green-600">
                 <span class="text-xl">🏠</span>
                 <span class="text-[9px] font-bold">الرئيسية</span>
             </button>
-            <button class="flex flex-col items-center gap-1 text-gray-400 opacity-50">
-                <span class="text-xl">💬</span>
-                <span class="text-[9px] font-bold">الدردشة</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-gray-400 opacity-50">
-                <span class="text-xl">👤</span>
-                <span class="text-[9px] font-bold">حسابي</span>
+            <button onclick="askAdminCode()" class="flex flex-col items-center text-gray-400">
+                <span class="text-xl">⚙️</span>
+                <span class="text-[9px] font-bold">المسؤول</span>
             </button>
         </nav>
 
-    </div>
-
-    <script>
-        // إظهار رسالة البرمجة
-        window.onload = function() {
-            const toast = document.getElementById("toast");
-            toast.className = "show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-            
-            // جلب البيانات حياً من Firebase إذا تم الربط
-            try {
-                loadLiveAds();
-            } catch(e) { console.log("Firebase not linked yet"); }
-        };
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        function askAdminCode() {
-            document.getElementById('code-modal').classList.remove('hidden');
-        }
-
-        function closeCodeModal() {
-            document.getElementById('code-modal').classList.add('hidden');
-        }
-
-        function verifyCode() {
-            const input = document.getElementById('admin-code').value;
-            if(input === "09962") {
-                closeCodeModal();
-                showPage('admin');
-                document.getElementById('admin-code').value = "";
-            } else {
-                alert("عذراً، الكود غير صحيح!");
-            }
-        }
-
-        // دالة إرسال البيانات إلى Firebase
-        async function postToFirebase() {
-            const title = document.getElementById('ad-title').value;
-            const category = document.getElementById('ad-category').value;
-            const desc = document.getElementById('ad-desc').value;
-
-            if(!title) { alert("يُرجى كتابة عنوان الإعلان!"); return; }
-
-            try {
-                const { addDoc, collection } = window.dbFunctions;
-                await addDoc(collection(window.db, "syria_ads"), {
-                    title: title,
-                    category: category,
-                    description: desc,
-                    createdAt: new Date().getTime(),
-                    author: "محمد صالح"
-                });
-                
-                alert("تم النشر بنجاح! سيظهر الإعلان للجميع الآن.");
-                document.getElementById('ad-title').value = "";
-                document.getElementById('ad-desc').value = "";
-                showPage('home');
-            } catch (error) {
-                console.error("Error: ", error);
-                alert("خطأ: يرجى التأكد من وضع إعدادات Firebase في الكود أولاً.");
-            }
-        }
-
-        // دالة جلب البيانات وعرضها
-        function loadLiveAds() {
-            const { onSnapshot, collection, query, orderBy } = window.dbFunctions;
-            const q = query(collection(window.db, "syria_ads"), orderBy("createdAt", "desc"));
-            
-            onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('live-ads');
-                container.innerHTML = "";
-                
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const card = `
-                        <div class="bg-white p-3 border rounded-xl shadow-sm border-r-4 border-green-500">
-                            <div class="flex justify-between items-start">
-                                <h4 class="font-bold text-sm">${data.title}</h4>
-                                <span class="text-[8px] bg-gray-100 px-1 rounded uppercase">${data.category}</span>
-                            </div>
-                            <p class="text-[10px] text-gray-500 mt-1">${data.description || ''}</p>
-                            <p class="text-[8px] text-green-600 mt-2">بواسطة: ${data.author}</p>
-                        </div>
-                    `;
-                    container.innerHTML += card;
-                });
-            });
-        }
-    </script>
-</body>
-</html>
+        <!-- نافذة الكود -->
+        <div id="code-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center
 
 
