@@ -1,112 +1,201 @@
-// مشروع تطبيق ويب متكامل للسوريين باستخدام HTML, CSS, JavaScript و LocalStorage لتخزين البيانات مؤقتاً
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تطبيق خدمات السوريين</title>
+<style>
+body { font-family: Arial, sans-serif; background-color: #f0f4f8; color: #333; margin: 0; }
+header { background-color: #4a90e2; color: white; padding: 15px; text-align: center; font-size: 24px; }
+nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; background-color: #ff8c42; color: white; transition: 0.3s; }
+button:hover { background-color: #e67300; }
+section { display: none; padding: 20px; text-align: center; }
+.active { display: block; }
+#login { text-align: center; margin-top: 50px; }
+input, textarea, select { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #ccc; }
+#services-list button { margin: 5px; }
+</style>
+</head>
+<body>
 
-// الهيكل الأساسي للتطبيق
-const app = document.createElement('div');
-app.id = 'app';
-document.body.appendChild(app);
+<header>تطبيق خدمات السوريين</header>
 
-// CSS أساسي
-const style = document.createElement('style');
-style.innerHTML = `
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
-#app { max-width: 1200px; margin: auto; padding: 20px; }
-header { display:flex; justify-content: space-between; align-items:center; background:#4CAF50; color:white; padding:10px 20px; border-radius:10px; }
-nav button { margin:0 5px; padding:10px 15px; border:none; border-radius:5px; cursor:pointer; background:#fff; color:#4CAF50; font-weight:bold; }
-nav button:hover { background:#e8f5e9; }
-section { margin-top:20px; background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
-.service-button { display:block; margin:10px 0; padding:10px 15px; border:none; border-radius:5px; background:#4CAF50; color:white; cursor:pointer; font-size:16px; }
-.service-button:hover { background:#45a049; }
-.login-section { display:flex; flex-direction:column; max-width:400px; margin:auto; }
-.login-section input { margin:10px 0; padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc; }
-.login-section button { background:#4CAF50; color:white; border:none; padding:10px; font-size:16px; cursor:pointer; border-radius:5px; }
-.login-section button:hover { background:#45a049; }
-`; 
-document.head.appendChild(style);
+<div id="login">
+  <h2>تسجيل الدخول</h2>
+  <input type="text" id="username" placeholder="اسم المستخدم"><br>
+  <input type="password" id="password" placeholder="كلمة المرور"><br>
+  <button onclick="login()">تسجيل الدخول</button>
+</div>
 
-// بيانات المستخدمين مؤقتة
-let users = [{username:'user1', password:'1234', role:'user'}, {username:'admin', password:'09962', role:'owner'}];
+<nav id="menu" style="display:none;">
+  <button onclick="showSection('services')">الخدمات</button>
+  <button onclick="showSection('reports')">البلاغات</button>
+  <button onclick="showSection('transactions')">الحوالات المالية</button>
+  <button id="admin-panel-btn" onclick="showSection('admin')" style="display:none;">لوحة المالك</button>
+</nav>
 
-let currentUser = null;
+<section id="services">
+  <h3>الخدمات المتاحة</h3>
+  <div id="services-list"></div>
+</section>
 
-function renderLogin(){
-    app.innerHTML = '<section class="login-section"><h2>تسجيل الدخول</h2><input id="username" placeholder="اسم المستخدم"><input id="password" placeholder="كلمة المرور" type="password"><button id="loginBtn">تسجيل الدخول</button></section>';
-    document.getElementById('loginBtn').onclick = ()=>{
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const user = users.find(u=>u.username===username && u.password===password);
-        if(user){ currentUser=user; renderApp(); } else { alert('بيانات غير صحيحة'); }
-    };
-}
+<section id="reports">
+  <h3>تقديم بلاغ</h3>
+  <select id="report-service"></select><br><br>
+  <textarea id="report-desc" placeholder="وصف البلاغ" rows="4" cols="50"></textarea><br><br>
+  <button onclick="submitReport()">إرسال البلاغ</button>
+</section>
 
-function renderApp(){
-    app.innerHTML = '';
-    const header = document.createElement('header');
-    header.innerHTML = `<h1>تطبيق خدمات السوريين</h1>`;
-    const nav = document.createElement('nav');
+<section id="transactions">
+  <h3>إرسال حوالة مالية</h3>
+  <input type="number" id="receiver-id" placeholder="رقم حساب المستلم"><br><br>
+  <input type="number" id="amount" placeholder="المبلغ"><br><br>
+  <button onclick="sendTransaction()">إرسال الحوالة</button>
+</section>
 
-    const sections = ['الخدمات الحكومية','خدمات الاتصال','خدمات طبية','الشرطة','بلاغات','حوالات مالية','ارسال واستقبال العملاء'];
+<section id="admin">
+  <h3>لوحة المالك - إدارة المشرفين</h3>
 
-    sections.forEach(sec=>{
-        const btn = document.createElement('button');
-        btn.textContent = sec;
-        btn.onclick = ()=>renderSection(sec);
-        nav.appendChild(btn);
+  <h4>إضافة مشرف جديد</h4>
+  <input type="text" id="mod-username" placeholder="اسم المشرف"><br>
+  <input type="password" id="mod-password" placeholder="كلمة المرور"><br>
+  <select id="mod-role">
+    <option value="moderator">مشرف عادي</option>
+    <option value="admin">مالك فرعي</option>
+  </select><br><br>
+  <button onclick="addModerator()">إضافة المشرف</button>
+
+  <h4>المشرفون الحاليون</h4>
+  <div id="moderators-list"></div>
+</section>
+
+<script>
+let token = '';
+let userId = '';
+let role = '';
+
+async function login() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+
+  // تحقق من رمز المالك
+  if(password === '09962') {
+    role = 'admin';
+    userId = 'admin';
+    alert('مرحبا مالك التطبيق!');
+  } else {
+    // تسجيل دخول للمستخدم العادي عبر API
+    const res = await fetch('http://localhost:3000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
     });
+    const data = await res.json();
+    if(!res.ok){ alert(data.message); return; }
+    token = data.token;
+    role = data.role;
+    userId = data.user_id;
+    alert('مرحبا المستخدم!');
+  }
 
-    header.appendChild(nav);
-    app.appendChild(header);
-
-    // اذا كان المالك
-    if(currentUser.role==='owner'){
-        const adminBtn = document.createElement('button');
-        adminBtn.textContent='لوحة المالك';
-        adminBtn.onclick = renderOwnerPanel;
-        header.appendChild(adminBtn);
-    }
-    renderSection('الخدمات الحكومية');
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('menu').style.display = 'flex';
+  if(role === 'admin') document.getElementById('admin-panel-btn').style.display = 'inline-block';
+  loadServices();
+  if(role === 'admin') loadModerators();
 }
 
-function renderSection(section){
-    let content = document.createElement('section');
-    content.innerHTML=`<h2>${section}</h2>`;
-
-    // إضافة بعض الخدمات لكل قسم
-    let services = [];
-    switch(section){
-        case 'الخدمات الحكومية': services=['تجديد الهوية','إصدار جواز سفر','تقديم طلبات']; break;
-        case 'خدمات الاتصال': services=['شراء شريحة','شحن رصيد','الإنترنت']; break;
-        case 'خدمات طبية': services=['حجز موعد','استشارة طبية','صيدليات قريبة']; break;
-        case 'الشرطة': services=['الاتصال الطارئ','تقديم بلاغ','خدمات المرور']; break;
-        case 'بلاغات': services=['بلاغ سرقة','بلاغ حريق','بلاغ فقدان']; break;
-        case 'حوالات مالية': services=['تحويل أموال','كشف حساب','إيداع']; break;
-        case 'ارسال واستقبال العملاء': services=['تحديد موعد','خدمة التوصيل','خدمة العملاء']; break;
-    }
-
-    services.forEach(s=>{
-        const btn = document.createElement('button');
-        btn.className='service-button';
-        btn.textContent=s;
-        btn.onclick = ()=>alert('تم اختيار الخدمة: '+s);
-        content.appendChild(btn);
-    });
-
-    const oldSection = document.querySelector('section');
-    if(oldSection) oldSection.remove();
-    app.appendChild(content);
+async function loadServices() {
+  const res = await fetch('http://localhost:3000/api/services');
+  const services = await res.json();
+  const list = document.getElementById('services-list');
+  const select = document.getElementById('report-service');
+  list.innerHTML = '';
+  select.innerHTML = '';
+  services.forEach(s => {
+    list.innerHTML += `<button>${s.name}</button>`;
+    select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+  });
 }
 
-function renderOwnerPanel(){
-    let panel = document.createElement('section');
-    panel.innerHTML=`<h2>لوحة التحكم للمالك</h2><p>تعيين مشرفين وصلاحياتهم</p><input id="newUser" placeholder="اسم المستخدم"><input id="newPass" placeholder="كلمة المرور" type="password"><select id="role"><option value="user">مشرف عادي</option><option value="owner">مالك</option></select><button id="addUser">إضافة مستخدم</button>`;
-    app.appendChild(panel);
-
-    document.getElementById('addUser').onclick = ()=>{
-        const username = document.getElementById('newUser').value;
-        const password = document.getElementById('newPass').value;
-        const role = document.getElementById('role').value;
-        users.push({username,password,role});
-        alert('تم إضافة المستخدم');
-    };
+function showSection(id){
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-renderLogin();
+async function submitReport() {
+  const service_id = document.getElementById('report-service').value;
+  const description = document.getElementById('report-desc').value;
+  const res = await fetch('http://localhost:3000/api/reports', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ user_id: userId, service_id, description })
+  });
+  const data = await res.json();
+  alert(data.message);
+}
+
+async function sendTransaction() {
+  const receiver_id = document.getElementById('receiver-id').value;
+  const amount = document.getElementById('amount').value;
+  const res = await fetch('http://localhost:3000/api/transactions', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ sender_id: userId, receiver_id, amount })
+  });
+  const data = await res.json();
+  alert(data.message);
+}
+
+async function addModerator() {
+  const username = document.getElementById('mod-username').value;
+  const password = document.getElementById('mod-password').value;
+  const role = document.getElementById('mod-role').value;
+
+  const res = await fetch('http://localhost:3000/api/users', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ username, password, role })
+  });
+  const data = await res.json();
+  alert(data.message);
+  loadModerators();
+}
+
+async function loadModerators() {
+  const res = await fetch('http://localhost:3000/api/users', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const mods = await res.json();
+  const list = document.getElementById('moderators-list');
+  list.innerHTML = '';
+  mods.forEach(m => {
+    list.innerHTML += `<div>${m.username} - ${m.role} 
+      <button onclick="deleteModerator(${m.id})">حذف</button>
+      </div>`;
+  });
+}
+
+async function deleteModerator(id) {
+  const res = await fetch(`http://localhost:3000/api/users/${id}`, {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const data = await res.json();
+  alert(data.message);
+  loadModerators();
+}
+</script>
+
+</body>
+</html>
