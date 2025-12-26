@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SyriaClick - المنصة الشاملة</title>
+    <title>SyriaClick - تطبيق السوريين الشامل</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -11,191 +11,220 @@
         
         body {
             font-family: 'Noto Sans Arabic', sans-serif;
-            background-color: #f4f7f6;
+            background-color: #f0f2f5;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .service-card {
-            transition: all 0.2s ease;
+        .category-card {
+            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
         }
 
-        .service-card:active {
-            transform: scale(0.92);
+        .category-card:active {
+            transform: scale(0.95);
         }
 
-        .grid-layout {
+        .service-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.9); }
+        @media (min-width: 768px) {
+            .service-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        /* تحسين مظهر الرسالة لتظهر في المنتصف تماماً */
+        #creditOverlay {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
             to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-animate {
-            animation: fadeInScale 0.3s ease-out forwards;
         }
     </style>
 </head>
 <body class="pb-24">
 
-    <!-- نافذة المبرمج محمد صالح - في المنتصف تماماً -->
-    <div id="welcomeModal" class="fixed inset-0 bg-black/80 z-[200] flex items-center justify-center p-6">
-        <div class="bg-white rounded-[2.5rem] p-8 max-w-sm w-full text-center shadow-2xl modal-animate border-b-8 border-blue-600">
-            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-terminal text-3xl text-blue-600"></i>
+    <!-- رسالة المبرمج محمد صالح في منتصف الشاشة -->
+    <div id="creditOverlay">
+        <div class="modal-content">
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-code text-3xl text-blue-700"></i>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">سوري كليك 2025</h2>
-            <p class="text-gray-600 mb-8">
-                تمت برمجة وتطوير هذا النظام الشامل الذي يضم 126 خدمة بواسطة المبرمج:
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">أهلاً بك في سوري كليك</h2>
+            <p class="text-gray-600 mb-6 leading-relaxed">
+                تمت برمجة وتطوير هذا التطبيق الشامل بكافة ميزاته الـ 126 بواسطة:
                 <br>
-                <span class="text-blue-600 font-bold text-2xl mt-2 block tracking-wide">محمد صالح</span>
+                <span class="text-blue-700 font-bold text-xl block mt-2">محمد صالح</span>
             </p>
-            <button onclick="closeWelcome()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:bg-blue-700 transition-all active:scale-95">
-                بدء الاستخدام
+            <button onclick="closeCredit()" class="w-full bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition">
+                استكشف الخدمات
             </button>
         </div>
     </div>
 
     <!-- Header -->
-    <header class="bg-blue-600 text-white p-4 sticky top-0 z-50 shadow-lg">
+    <header class="bg-blue-700 text-white p-4 sticky top-0 z-50 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <i class="fas fa-microchip text-2xl"></i>
+                <div class="bg-white p-1 rounded-lg">
+                    <i class="fas fa-cube text-blue-700 text-xl"></i>
+                </div>
                 <h1 class="text-xl font-bold">سوري كليك</h1>
             </div>
-            <div class="text-[10px] bg-blue-500/50 px-3 py-1 rounded-full border border-blue-300">
-                المبرمج: محمد صالح
-            </div>
+            <div class="text-sm font-light">بإشراف: محمد صالح</div>
         </div>
     </header>
 
-    <main class="container mx-auto p-4 space-y-6">
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 space-y-8">
         
-        <!-- الإحصائيات (الـ 42 ألف مستخدم) -->
-        <section class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-            <div class="grid grid-cols-3 gap-4 text-center">
-                <div>
-                    <p class="text-blue-600 font-bold text-xl">42k</p>
-                    <p class="text-[10px] text-gray-400 font-bold">مستخدم نشط</p>
-                </div>
-                <div class="border-x border-gray-100">
-                    <p class="text-emerald-500 font-bold text-xl">126</p>
-                    <p class="text-[10px] text-gray-400 font-bold">خدمة ذكية</p>
-                </div>
-                <div>
-                    <p class="text-orange-500 font-bold text-xl">14</p>
-                    <p class="text-[10px] text-gray-400 font-bold">محافظة</p>
-                </div>
+        <!-- قسم البحث والإحصائيات -->
+        <section class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <div class="relative mb-4">
+                <input type="text" placeholder="ابحث بين 126 خدمة سورية..." class="w-full bg-gray-100 p-3 pr-10 rounded-xl outline-none focus:ring-2 ring-blue-500">
+                <i class="fas fa-search absolute right-3 top-4 text-gray-400"></i>
             </div>
-            <div class="mt-6 relative">
-                <input type="text" placeholder="ابحث عن خدمتك..." class="w-full bg-gray-50 p-4 pr-12 rounded-2xl outline-none border border-transparent focus:border-blue-400 transition-all">
-                <i class="fas fa-search absolute right-4 top-4 text-gray-300"></i>
+            <div class="flex justify-around text-center text-xs text-gray-500 font-medium">
+                <div><p class="text-blue-600 font-bold text-lg">42k</p><p>مستخدم نشط</p></div>
+                <div class="border-x px-4"><p class="text-emerald-600 font-bold text-lg">126</p><p>خدمة مفعلة</p></div>
+                <div><p class="text-orange-600 font-bold text-lg">14</p><p>محافظة</p></div>
             </div>
         </section>
 
-        <!-- قطاعات الخدمات (الـ 126 خيار) -->
-        <div class="space-y-8">
+        <!-- شبكة الخدمات (الأقسام الـ 7) -->
+        <div id="app-sections">
             
-            <!-- 1. الحكومي (20 خيار) -->
-            <section>
-                <div class="flex items-center justify-between mb-4 px-2">
-                    <h2 class="font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fas fa-balance-scale text-red-500"></i> الشؤون الحكومية والقانونية
+            <!-- 1. الحكومي والقانوني -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-gavel text-red-600"></i> المركز الحكومي والقانوني
                     </h2>
-                    <span class="text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded-lg">20 خيار</span>
+                    <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">20 خدمة</span>
                 </div>
-                <div class="grid-layout">
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50" onclick="alert('خدمة الهوية - مبرمجة بواسطة محمد صالح')">
-                        <i class="fas fa-id-card text-blue-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">الهوية</p>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-id-card text-blue-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">حجز الهوية</p>
                     </div>
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
-                        <i class="fas fa-passport text-blue-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">الجواز</p>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-passport text-blue-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">تجديد جواز</p>
                     </div>
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border-gray-200 border-dashed border-2 flex items-center justify-center">
-                        <p class="text-[9px] text-gray-400">+18 خيار</p>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-file-invoice text-blue-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">سجل مدني</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+17 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- 2. الصحة (18 خيار) -->
-            <section>
-                <div class="flex items-center justify-between mb-4 px-2">
-                    <h2 class="font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fas fa-heart-pulse text-emerald-500"></i> الطوارئ والصحة
+            <!-- 2. الصحة -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-heartpulse text-emerald-600"></i> الصحة والطوارئ
                     </h2>
-                    <span class="text-[10px] bg-emerald-100 text-emerald-600 px-2 py-1 rounded-lg">18 خيار</span>
+                    <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded">18 خدمة</span>
                 </div>
-                <div class="grid-layout">
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
-                        <i class="fas fa-ambulance text-emerald-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">إسعاف</p>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-ambulance text-emerald-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">إسعاف فوري</p>
                     </div>
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
-                        <i class="fas fa-house-medical text-emerald-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">صيدليات</p>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-pills text-emerald-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">صيدليات</p>
                     </div>
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border-gray-200 border-dashed border-2 flex items-center justify-center">
-                        <p class="text-[9px] text-gray-400">+16 خيار</p>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+16 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- 3. المال (25 خيار) -->
-            <section>
-                <div class="flex items-center justify-between mb-4 px-2">
-                    <h2 class="font-bold text-gray-800 flex items-center gap-2">
-                        <i class="fas fa-wallet text-orange-500"></i> المال والتحويلات
+            <!-- 3. المال والتجارة -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-wallet text-orange-600"></i> المال والتحويلات
                     </h2>
-                    <span class="text-[10px] bg-orange-100 text-orange-600 px-2 py-1 rounded-lg">25 خيار</span>
+                    <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">25 خدمة</span>
                 </div>
-                <div class="grid-layout">
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
-                        <i class="fas fa-money-bill-transfer text-orange-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">حوالات</p>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-money-bill-transfer text-orange-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">حوالات</p>
                     </div>
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border border-gray-50">
-                        <i class="fas fa-chart-line text-orange-500 text-xl mb-2"></i>
-                        <p class="text-[10px] font-bold">الذهب</p>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-coins text-orange-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">أسعار الصرف</p>
                     </div>
-                    <div class="service-card bg-white p-4 rounded-3xl shadow-sm text-center border-gray-200 border-dashed border-2 flex items-center justify-center">
-                        <p class="text-[9px] text-gray-400">+23 خيار</p>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+23 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- إشعار بالبقية -->
-            <div class="bg-gray-200 p-6 rounded-3xl text-center text-gray-500 text-sm italic">
-                مرر لاستعراض بقية القطاعات الـ 7 والـ 126 ميزة برمجية..
+            <!-- ملاحظة تذكيرية -->
+            <div class="p-6 bg-blue-50 rounded-2xl text-center border border-blue-100">
+                <p class="text-sm text-blue-700 font-medium italic">مرر للأسفل لاستعراض كافة القطاعات الـ 7 والـ 126 خدمة المتوفرة.</p>
             </div>
         </div>
-
-        <footer class="text-center p-8">
-            <p class="text-gray-400 text-xs">حقوق البرمجة محفوظة لـ محمد صالح &copy; 2025</p>
-        </footer>
     </main>
 
-    <!-- Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-gray-100 p-4 flex justify-around items-center z-50">
-        <button class="text-blue-600"><i class="fas fa-home text-xl"></i></button>
-        <button class="text-gray-300"><i class="fas fa-grid-2 text-xl"></i></button>
-        <button class="text-gray-300"><i class="fas fa-comment-dots text-xl"></i></button>
-        <button class="text-gray-300"><i class="fas fa-user-circle text-xl"></i></button>
+    <!-- Navigation السفلي -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex justify-around items-center z-50 shadow-lg">
+        <button class="flex flex-col items-center text-blue-700">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-[10px]">الرئيسية</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-th-large text-xl"></i>
+            <span class="text-[10px]">الخدمات</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-comments text-xl"></i>
+            <span class="text-[10px]">دردشة</span>
+        </button>
+        <button class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-user-circle text-xl"></i>
+            <span class="text-[10px]">حسابي</span>
+        </button>
     </nav>
 
     <script>
-        function closeWelcome() {
-            const modal = document.getElementById('welcomeModal');
-            modal.style.opacity = '0';
-            modal.style.transition = 'opacity 0.4s ease';
+        function closeCredit() {
+            const overlay = document.getElementById('creditOverlay');
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.3s ease';
             setTimeout(() => {
-                modal.style.display = 'none';
-            }, 400);
+                overlay.style.display = 'none';
+            }, 300);
         }
     </script>
 </body>
