@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SyriaClick - تطبيق السوريين الشامل</title>
+    <title>SyriaClick - النسخة الكاملة 126 ميزة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -11,363 +11,265 @@
         
         body {
             font-family: 'Noto Sans Arabic', sans-serif;
-            background-color: #f0f2f5;
+            background-color: #f8fafc;
+            user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
         .category-card {
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid #f1f5f9;
         }
 
-        .category-card:active {
-            transform: scale(0.95);
-        }
+        .category-card:active { transform: scale(0.92); background-color: #f1f5f9; }
 
         .service-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 12px;
         }
 
-        @media (min-width: 768px) {
-            .service-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #dev-popup {
+            display: flex; position: fixed; inset: 0; z-index: 10000;
+            background-color: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
+            align-items: center; justify-content: center; padding: 20px;
         }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            height: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+        .nav-btn.active { color: #1d4ed8 !important; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-32">
 
-    <!-- Top Bar -->
-    <header class="bg-blue-700 text-white p-4 sticky top-0 z-50 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="bg-white p-1 rounded-lg">
-                    <i class="fas fa-cube text-blue-700 text-xl"></i>
-                </div>
-                <h1 class="text-xl font-bold">سوري كليك</h1>
+    <!-- رسالة ترحيب المبرمج -->
+    <div id="dev-popup">
+        <div class="bg-white p-8 rounded-[2.5rem] max-w-sm w-full text-center shadow-2xl">
+            <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-code text-2xl text-white"></i>
             </div>
-            <div class="flex gap-4">
-                <button class="hover:bg-blue-600 p-2 rounded-full"><i class="fas fa-search"></i></button>
-                <button class="hover:bg-blue-600 p-2 rounded-full relative">
-                    <i class="fas fa-bell"></i>
-                    <span class="absolute top-1 right-1 bg-red-500 w-2 h-2 rounded-full"></span>
-                </button>
-            </div>
+            <h2 class="text-xl font-bold mb-2">سوري كليك 2025</h2>
+            <p class="text-gray-600 mb-6 text-sm">تطوير المبرمج: <br><span class="text-blue-700 font-bold text-2xl">محمد صالح</span></p>
+            <button onclick="document.getElementById('dev-popup').style.display='none'" class="w-full bg-blue-700 text-white py-4 rounded-2xl font-bold active:scale-95 transition">دخول المنصة</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-blue-700 text-white p-5 sticky top-0 z-50 shadow-lg flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-cube text-xl"></i>
+            <h1 class="font-bold">سوري كليك</h1>
+        </div>
+        <div class="flex gap-4">
+            <i class="fas fa-search" onclick="focusSearch()"></i>
+            <i class="fas fa-bell"></i>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="container mx-auto p-4 space-y-8">
-        
-        <!-- Search & Quick Stats -->
-        <section class="bg-white p-4 rounded-2xl shadow-sm">
-            <div class="relative mb-4">
-                <input type="text" placeholder="ابحث بين 126 خدمة سورية..." class="w-full bg-gray-100 p-3 pr-10 rounded-xl outline-none focus:ring-2 ring-blue-500">
-                <i class="fas fa-search absolute right-3 top-4 text-gray-400"></i>
-            </div>
-            <div class="flex justify-around text-center text-xs text-gray-500 font-medium">
-                <div><p class="text-blue-600 font-bold text-lg">42k</p><p>مستخدم نشط</p></div>
-                <div class="border-x px-4"><p class="text-emerald-600 font-bold text-lg">126</p><p>خدمة مفعلة</p></div>
-                <div><p class="text-orange-600 font-bold text-lg">14</p><p>محافظة</p></div>
-            </div>
-        </section>
+    <main class="container mx-auto p-4">
 
-        <!-- Services Navigation -->
-        <div id="app-sections">
-            <!-- Section 1: الخدمات الحكومية والقانونية (20 خدمة) -->
-            <section class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fas fa-gavel text-red-600"></i> المركز الحكومي والقانوني
-                    </h2>
-                    <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">20 خدمة</span>
+        <!-- الصفحة الرئيسية وتضم كافة الأقسام والميزات -->
+        <div id="home-page" class="page active space-y-10">
+            
+            <!-- البحث والإحصائيات -->
+            <section class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <input id="mainSearch" type="text" placeholder="ابحث في 126 خدمة..." class="w-full bg-gray-50 p-4 rounded-2xl outline-none border mb-4">
+                <div class="flex justify-between text-center text-[10px] font-bold text-gray-400">
+                    <div class="flex-1"> <p class="text-blue-700 text-lg">126</p> ميزة </div>
+                    <div class="flex-1 border-x"> <p class="text-emerald-600 text-lg">42k</p> مستخدم </div>
+                    <div class="flex-1"> <p class="text-orange-600 text-lg">14</p> محافظة </div>
                 </div>
+            </section>
+
+            <!-- 1. الحكومة والقانون -->
+            <section>
+                <h2 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-landmark text-red-600"></i> الحكومة والقانون (20 ميزة)</h2>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-id-card text-blue-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">حجز الهوية</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('حجز الهوية')">
+                        <i class="fas fa-id-card text-blue-600 text-xl mb-1"></i><p class="text-[10px] font-bold">الهوية</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-passport text-blue-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">تجديد جواز</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('جواز السفر')">
+                        <i class="fas fa-passport text-blue-600 text-xl mb-1"></i><p class="text-[10px] font-bold">الجواز</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-file-invoice text-blue-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">سجل مدني</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('لا حكم عليه')">
+                        <i class="fas fa-shield text-blue-600 text-xl mb-1"></i><p class="text-[10px] font-bold">لا حكم عليه</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-scale-balanced text-blue-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">استشارة محامٍ</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-briefcase text-blue-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">تراخيص مهنية</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">+15 خدمة</p>
+                    <div class="category-card bg-gray-50 p-4 rounded-2xl border-2 border-dashed flex items-center justify-center" onclick="openSvc('باقي الخدمات الحكومية')">
+                        <p class="text-[9px] text-gray-400">+17 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 2: الصحة والطوارئ (18 خدمة) -->
-            <section class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fas fa-heartpulse text-emerald-600"></i> الصحة والطوارئ
-                    </h2>
-                    <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded">18 خدمة</span>
-                </div>
+            <!-- 2. الصحة -->
+            <section>
+                <h2 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-heartpulse text-emerald-600"></i> الصحة والطوارئ (18 ميزة)</h2>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-ambulance text-emerald-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">إسعاف فوري</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('إسعاف فوري')">
+                        <i class="fas fa-ambulance text-emerald-500 text-xl mb-1"></i><p class="text-[10px] font-bold">إسعاف</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-pills text-emerald-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">صيدليات مناوبة</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('صيدليات مناوبة')">
+                        <i class="fas fa-pills text-emerald-500 text-xl mb-1"></i><p class="text-[10px] font-bold">صيدليات</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-droplet text-red-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">بنك الدم</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-user-md text-emerald-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">حجز عيادات</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-flask-vial text-emerald-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">مختبرات</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">+13 خدمة</p>
+                    <div class="category-card bg-gray-50 p-4 rounded-2xl border-2 border-dashed flex items-center justify-center" onclick="openSvc('باقي الخدمات الطبية')">
+                        <p class="text-[9px] text-gray-400">+16 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 3: المال والتجارة (25 خدمة) -->
-            <section class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fas fa-wallet text-orange-600"></i> المال، السوق والتحويلات
-                    </h2>
-                    <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">25 خدمة</span>
-                </div>
+            <!-- 3. المال -->
+            <section>
+                <h2 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-coins text-orange-600"></i> المال والتحويلات (25 ميزة)</h2>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-money-bill-transfer text-orange-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">حوالات داخلية</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('حوالات داخلية')">
+                        <i class="fas fa-money-bill-transfer text-orange-500 text-xl mb-1"></i><p class="text-[10px] font-bold">حوالات</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-coins text-orange-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">أسعار الصرف</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('أسعار الصرف')">
+                        <i class="fas fa-dollar-sign text-orange-500 text-xl mb-1"></i><p class="text-[10px] font-bold">الصرف</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-store text-orange-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">سوق المستعمل</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-cart-shopping text-orange-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">طلبات التموين</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-chart-line text-orange-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">بورصة الذهب</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">+20 خدمة</p>
+                    <div class="category-card bg-gray-50 p-4 rounded-2xl border-2 border-dashed flex items-center justify-center" onclick="openSvc('باقي الخدمات المالية')">
+                        <p class="text-[9px] text-gray-400">+23 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 4: التعليم والتدريب (15 خدمة) -->
-            <section class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fas fa-graduation-cap text-indigo-600"></i> التعليم والمهارات
-                    </h2>
-                    <span class="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded">15 خدمة</span>
-                </div>
+            <!-- 4. المغتربين -->
+            <section>
+                <h2 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-earth-americas text-blue-500"></i> شؤون المغتربين (18 ميزة)</h2>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-book text-indigo-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">كتب مدرسية</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('البدل النقدي')">
+                        <i class="fas fa-hand-holding-dollar text-blue-500 text-xl mb-1"></i><p class="text-[10px] font-bold">البدل</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-chalkboard-user text-indigo-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">مدرسين خصوصي</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-laptop-code text-indigo-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">دورات مهنية</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">+12 خدمة</p>
+                    <div class="category-card bg-gray-50 p-4 rounded-2xl border-2 border-dashed flex items-center justify-center" onclick="openSvc('خدمات المغتربين')">
+                        <p class="text-[9px] text-gray-400">+17 خدمة</p>
                     </div>
                 </div>
             </section>
 
-             <!-- Section 5: العقارات والنقل (20 خدمة) -->
-             <section class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fas fa-building text-slate-700"></i> السكن والنقل
-                    </h2>
-                    <span class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded">20 خدمة</span>
-                </div>
+            <!-- 5. السكن والنقل -->
+            <section>
+                <h2 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-bus text-slate-700"></i> السكن والنقل (20 ميزة)</h2>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-home text-slate-600 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">بيوت للإيجار</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('بيوت للإيجار')">
+                        <i class="fas fa-home text-slate-600 text-xl mb-1"></i><p class="text-[10px] font-bold">بيوت</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-bus-simple text-slate-600 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">نقل بين المحافظات</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-car text-slate-600 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">تكسي داخلي</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">+17 خدمة</p>
+                    <div class="category-card bg-gray-50 p-4 rounded-2xl border-2 border-dashed flex items-center justify-center" onclick="openSvc('خدمات النقل')">
+                        <p class="text-[9px] text-gray-400">+19 خدمة</p>
                     </div>
                 </div>
             </section>
 
-             <!-- Section 6: المغتربين (18 خدمة) -->
-             <section class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fas fa-earth-americas text-blue-400"></i> شؤون المغتربين
-                    </h2>
-                    <span class="text-xs bg-blue-50 text-blue-400 px-2 py-1 rounded">18 خدمة</span>
-                </div>
+            <!-- 6. التعليم -->
+            <section>
+                <h2 class="font-bold mb-4 flex items-center gap-2"><i class="fas fa-graduation-cap text-indigo-700"></i> التعليم والمهارات (15 ميزة)</h2>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-handshake-angle text-blue-400 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">البدل النقدي</p>
+                    <div class="category-card bg-white p-4 rounded-2xl shadow-sm text-center" onclick="openSvc('كتب مدرسية')">
+                        <i class="fas fa-book text-indigo-500 text-xl mb-1"></i><p class="text-[10px] font-bold">كتب</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-file-signature text-blue-400 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">وكالات خارجية</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">+16 خدمة</p>
+                    <div class="category-card bg-gray-50 p-4 rounded-2xl border-2 border-dashed flex items-center justify-center" onclick="openSvc('خدمات تعليمية')">
+                        <p class="text-[9px] text-gray-400">+14 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 7: ترفيه ومجتمع (10 خدمات) -->
-            <section class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-bold text-lg flex items-center gap-2">
-                        <i class="fas fa-masks-theater text-pink-600"></i> ترفيه ومجتمع
-                    </h2>
-                    <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded">10 خدمات</span>
-                </div>
-                <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-utensils text-pink-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">دليل المطاعم</p>
+            <!-- 7. الـ 100 ميزة الجديدة (باقي الميزات) -->
+            <section class="pb-10">
+                <div class="bg-blue-900 p-6 rounded-[2rem] text-white relative overflow-hidden" onclick="openSvc('قائمة الـ 100 ميزة الجديدة كاملة')">
+                    <div class="relative z-10">
+                        <h3 class="font-bold text-lg mb-1">باقي الميزات والـ 100 الجديدة</h3>
+                        <p class="text-xs text-blue-200 mb-4">طاقة شمسية، زراعة، صناعة، والمزيد...</p>
+                        <button class="bg-white text-blue-900 px-6 py-2 rounded-xl text-xs font-bold">عرض الكل الآن</button>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
-                        <i class="fas fa-calendar-check text-pink-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">فعاليات قادمة</p>
-                    </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">+8 خدمات</p>
-                    </div>
+                    <i class="fas fa-rocket absolute -bottom-4 -left-4 text-8xl opacity-10 rotate-12"></i>
                 </div>
             </section>
+        </div>
+
+        <!-- صفحة الأقسام (عند الضغط من الشريط السفلي) -->
+        <div id="categories-page" class="page space-y-4">
+            <h2 class="font-bold text-xl mb-6">كافة التصنيفات</h2>
+            <!-- تكرار الأقسام بشكل قائمة -->
+            <div class="bg-white p-4 rounded-2xl flex justify-between items-center" onclick="openSvc('قسم القضاء')"><p>الحكومة والقضاء</p><i class="fas fa-chevron-left"></i></div>
+            <div class="bg-white p-4 rounded-2xl flex justify-between items-center" onclick="openSvc('قسم الصحة')"><p>الصحة والطب</p><i class="fas fa-chevron-left"></i></div>
+            <div class="bg-white p-4 rounded-2xl flex justify-between items-center" onclick="openSvc('قسم المال')"><p>المال والتجارة</p><i class="fas fa-chevron-left"></i></div>
         </div>
 
     </main>
 
-    <!-- Detailed Service Modal (Hidden by default) -->
-    <div id="serviceModal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl">
-            <div class="p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 id="modalTitle" class="text-xl font-bold text-gray-800">تفاصيل الخدمة</h3>
-                        <p id="modalCategory" class="text-sm text-blue-600">تصنيف الخدمة</p>
-                    </div>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div class="space-y-4">
-                    <div class="bg-blue-50 p-4 rounded-xl">
-                        <p class="text-sm text-gray-700">هذه الخدمة تتيح لك الوصول المباشر إلى قاعدة بيانات شاملة ومحدثة. يمكنك بدء المعاملة إلكترونياً وتتبع حالتها.</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button class="bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-200">ابدأ الآن</button>
-                        <button class="bg-gray-100 text-gray-700 py-3 rounded-xl font-bold">حفظ للمفضلة</button>
-                    </div>
-                </div>
+    <!-- النافذة المنبثقة للخدمة (Modal) -->
+    <div id="svcModal" class="fixed inset-0 bg-black/70 z-[11000] hidden items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl p-8 text-center">
+            <div class="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-bolt-lightning text-3xl text-blue-600"></i>
+            </div>
+            <h3 id="modalTitle" class="text-2xl font-bold text-gray-900 mb-2"></h3>
+            <p class="text-gray-500 mb-8 text-sm leading-relaxed">أنت تستخدم نظام سوري كليك الذكي.<br>بإشراف المطور <b>محمد صالح</b>.</p>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="closeSvc()" class="bg-gray-100 py-4 rounded-2xl font-bold text-gray-500">رجوع</button>
+                <button onclick="alert('جاري بدء المعاملة...')" class="bg-blue-700 text-white py-4 rounded-2xl font-bold">بدء الآن</button>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-3 flex justify-around items-center z-50">
-        <button class="flex flex-col items-center gap-1 text-blue-600">
-            <i class="fas fa-home text-xl"></i>
-            <span class="text-[10px] font-bold">الرئيسية</span>
+    <!-- الشريط السفلي -->
+    <nav class="fixed bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md border shadow-2xl rounded-[2.5rem] p-3 flex justify-around items-center z-[5000]">
+        <button onclick="navigate('home', this)" class="nav-btn active flex flex-col items-center text-blue-700">
+            <i class="fas fa-house"></i><span class="text-[10px] font-bold">الرئيسية</span>
         </button>
-        <button class="flex flex-col items-center gap-1 text-gray-400">
-            <i class="fas fa-th-large text-xl"></i>
-            <span class="text-[10px] font-bold">الخدمات</span>
+        <button onclick="navigate('categories', this)" class="nav-btn flex flex-col items-center text-gray-400">
+            <i class="fas fa-grid-2"></i><span class="text-[10px] font-bold">الأقسام</span>
         </button>
-        <button class="flex flex-col items-center gap-1 text-gray-400">
-            <i class="fas fa-comments text-xl"></i>
-            <span class="text-[10px] font-bold">الدردشة</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 text-gray-400">
-            <i class="fas fa-wallet text-xl"></i>
-            <span class="text-[10px] font-bold">محفظتي</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 text-gray-400">
-            <i class="fas fa-user-circle text-xl"></i>
-            <span class="text-[10px] font-bold">بروفيلي</span>
+        <button onclick="navigate('chat', this)" class="nav-btn flex flex-col items-center text-gray-400">
+            <i class="fas fa-comment-dots"></i><span class="text-[10px] font-bold">الدردشة</span>
         </button>
     </nav>
 
     <script>
-        // Interactive Elements
-        const cards = document.querySelectorAll('.category-card');
-        const modal = document.getElementById('serviceModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalCategory = document.getElementById('modalCategory');
-
-        cards.forEach(card => {
-            card.addEventListener('click', () => {
-                const title = card.querySelector('p').innerText;
-                const sectionTitle = card.closest('section').querySelector('h2').innerText;
-                
-                modalTitle.innerText = title;
-                modalCategory.innerText = sectionTitle;
-                
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            });
-        });
-
-        function closeModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+        // فتح الخدمة
+        function openSvc(name) {
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('svcModal').style.display = 'flex';
         }
 
-        // Close on backdrop click
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
+        // إغلاق الخدمة
+        function closeSvc() {
+            document.getElementById('svcModal').style.display = 'none';
+        }
+
+        // التنقل بالشريط السفلي
+        function navigate(pageId, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId + '-page').classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('active', 'text-blue-700');
+                b.classList.add('text-gray-400');
+            });
+            btn.classList.add('active', 'text-blue-700');
+            btn.classList.remove('text-gray-400');
+        }
+
+        function focusSearch() {
+            document.getElementById('mainSearch').focus();
+        }
+
+        // تنبيه مخصص
+        function alert(msg) {
+            const m = document.getElementById('modalTitle');
+            const old = m.innerText;
+            m.innerText = "تنبيه النظام";
+            const p = document.querySelector('#svcModal p');
+            const pold = p.innerHTML;
+            p.innerHTML = msg;
+            setTimeout(() => {
+                m.innerText = old;
+                p.innerHTML = pold;
+                closeSvc();
+            }, 2000);
+        }
     </script>
 </body>
 </html>
