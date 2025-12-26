@@ -3,156 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق سوريا الجديدة</title>
+    <title>منصة سوريا الجديدة - محمد صالح</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; transition: all 0.3s ease; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-item.active { color: #10b981; border-top: 2px solid #10b981; }
         
-        /* تصميم الرسالة المنبثقة التلقائية */
         #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 12px;
-            padding: 16px;
-            position: fixed;
-            z-index: 100;
-            left: 50%;
-            bottom: 100px;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            visibility: hidden; min-width: 280px; background-color: #064e3b; color: #fff;
+            text-align: center; border-radius: 16px; padding: 16px; position: fixed;
+            z-index: 100; left: 50%; top: 50px; transform: translateX(-50%);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid #10b981;
         }
-        #toast.show {
-            visibility: visible;
-            animation: fadein_toast 0.5s, fadeout_toast 0.5s 2.5s;
-        }
-        @keyframes fadein_toast { from {bottom: 0; opacity: 0;} to {bottom: 100px; opacity: 1;} }
-        @keyframes fadeout_toast { from {bottom: 100px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {top: 0; opacity: 0;} to {top: 50px; opacity: 1;} }
+        @keyframes fadeout { from {top: 50px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="text-gray-900">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg relative flex flex-col">
+    <div id="toast">تم برمجة هذا التطبيق من قبل محمد صالح</div>
+
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col overflow-hidden">
         
         <!-- Header -->
-        <header class="bg-blue-700 p-6 text-white rounded-b-3xl shadow-lg relative">
-            <h1 id="header-title" class="text-2xl font-bold">سوريا الجديدة</h1>
-            <p id="header-subtitle" class="text-blue-100 text-sm mt-1">معاً نبني المستقبل</p>
-            
-            <!-- نص التطبيق التجريبي باللون الأخضر -->
-            <div class="absolute top-4 left-4 bg-emerald-500/20 border border-emerald-400 text-emerald-100 text-[10px] px-2 py-1 rounded-full font-bold">
-                هذا تطبيق تجريبي
+        <header class="bg-[#10b981] p-5 text-white shadow-lg relative">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">سوريا <span class="text-white">الجديدة</span></h1>
+                    <p class="text-[10px] bg-black/20 inline-block px-2 py-0.5 rounded mt-1">نسخة تجريبية شاملة v2.0</p>
+                </div>
+                <div class="bg-white/20 p-2 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                </div>
+            </div>
+            <!-- شريط البحث -->
+            <div class="mt-4 relative">
+                <input type="text" placeholder="ابحث عن وظيفة، بيت، سيارة..." class="w-full py-2 px-10 rounded-xl text-gray-800 focus:outline-none text-sm">
+                <span class="absolute right-3 top-2.5 text-gray-400">🔍</span>
             </div>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 p-4 pb-24 overflow-y-auto">
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-4 pb-24">
             
-            <!-- صفحة الرئيسية -->
-            <section id="home-page" class="page active space-y-4">
-                <div class="bg-gradient-to-l from-indigo-600 to-blue-500 p-5 rounded-2xl text-white shadow-md">
-                    <h2 class="font-bold text-lg">أهلاً بك في المرحلة الانتقالية</h2>
-                    <p class="text-xs opacity-90 mt-1">نظام موحد لخدمة المواطن وإعادة الإعمار (تحديث 2025).</p>
-                    <p class="text-[10px] mt-2 text-emerald-300 font-bold">● هذا تطبيق تجريبي</p>
+            <!-- الرئيسية -->
+            <section id="home" class="page active space-y-6">
+                <!-- قسم ميزات سريعة -->
+                <div class="grid grid-cols-4 gap-2 text-center">
+                    <div onclick="showPage('jobs')" class="cursor-pointer">
+                        <div class="bg-green-100 p-3 rounded-2xl mx-auto mb-1">💼</div>
+                        <span class="text-[10px] font-bold">وظائف</span>
+                    </div>
+                    <div onclick="showPage('real-estate')" class="cursor-pointer">
+                        <div class="bg-blue-100 p-3 rounded-2xl mx-auto mb-1">🏠</div>
+                        <span class="text-[10px] font-bold">عقارات</span>
+                    </div>
+                    <div onclick="showPage('cars')" class="cursor-pointer">
+                        <div class="bg-red-100 p-3 rounded-2xl mx-auto mb-1">🚗</div>
+                        <span class="text-[10px] font-bold">سيارات</span>
+                    </div>
+                    <div onclick="showPage('market')" class="cursor-pointer">
+                        <div class="bg-yellow-100 p-3 rounded-2xl mx-auto mb-1">🛒</div>
+                        <span class="text-[10px] font-bold">السوق</span>
+                    </div>
                 </div>
 
+                <!-- إعلانات مميزة -->
+                <div>
+                    <h3 class="font-bold mb-3 flex justify-between items-center text-sm">
+                        <span>إعلانات مميزة</span>
+                        <span class="text-green-600 text-[10px]">مشاهدة الكل</span>
+                    </h3>
+                    <div class="flex gap-3 overflow-x-auto pb-2">
+                        <div class="min-w-[140px] bg-white border rounded-xl overflow-hidden shadow-sm">
+                            <div class="h-20 bg-gray-200 flex items-center justify-center text-xs">صورة إعلان</div>
+                            <div class="p-2">
+                                <p class="text-[10px] font-bold">لابتوب Dell i7</p>
+                                <p class="text-[10px] text-green-600">4,500,000 ل.س</p>
+                            </div>
+                        </div>
+                        <div class="min-w-[140px] bg-white border rounded-xl overflow-hidden shadow-sm">
+                            <div class="h-20 bg-gray-200 flex items-center justify-center text-xs text-center">شقة للايجار<br>المزة</div>
+                            <div class="p-2">
+                                <p class="text-[10px] font-bold">شقة 3 غرف</p>
+                                <p class="text-[10px] text-green-600">800,000 ل.س/شهر</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قائمة الميزات (تحاكي الـ 75 ميزة بتبويبات) -->
+                <div class="bg-gray-50 p-4 rounded-2xl border border-dashed border-green-200">
+                    <h3 class="font-bold text-xs text-green-800 mb-2 italic">ميزات سوريا الجديدة:</h3>
+                    <ul class="text-[10px] grid grid-cols-2 gap-1 text-gray-600">
+                        <li>✅ هوية رقمية موحدة</li>
+                        <li>✅ توثيق أملاك عقارية</li>
+                        <li>✅ محفظة دفع إلكتروني</li>
+                        <li>✅ دليل مدارس وجامعات</li>
+                        <li>✅ مراكز طبية مجانية</li>
+                        <li>✅ منصة قروض صغيرة</li>
+                        <li>✅ خدمات دعم اللاجئين</li>
+                        <li>✅ خريطة الأضرار الحية</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- قسم الوظائف -->
+            <section id="jobs" class="page space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">قسم التوظيف</h2>
+                    <button onclick="openAction('نشر وظيفة جديدة')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">+ انشر وظيفة</button>
+                </div>
+                <div class="space-y-3">
+                    <div class="p-4 bg-white border rounded-xl shadow-sm border-r-4 border-green-500">
+                        <h4 class="font-bold text-sm">محاسب مالي - شركة إعمار</h4>
+                        <p class="text-[11px] text-gray-500">المكان: ريف دمشق | الراتب: مجزي</p>
+                        <button class="mt-2 text-xs text-green-600 font-bold">تقدم للوظيفة</button>
+                    </div>
+                    <div class="p-4 bg-white border rounded-xl shadow-sm border-r-4 border-green-500">
+                        <h4 class="font-bold text-sm">مطور برمجيات - منصة تقنية</h4>
+                        <p class="text-[11px] text-gray-500">المكان: عن بعد | الدوام: كامل</p>
+                        <button class="mt-2 text-xs text-green-600 font-bold">تقدم للوظيفة</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم العقارات -->
+            <section id="real-estate" class="page space-y-4">
+                <h2 class="text-lg font-bold">عقارات وإيجارات</h2>
+                <div class="flex gap-2">
+                    <button class="bg-green-600 text-white px-4 py-1 rounded-full text-[10px]">للإيجار</button>
+                    <button class="bg-gray-200 px-4 py-1 rounded-full text-[10px]">للبيع</button>
+                </div>
                 <div class="grid grid-cols-1 gap-4">
-                    <button onclick="showPage('rebuild')" class="flex items-center gap-4 bg-emerald-50 p-4 rounded-xl border border-emerald-100 hover:bg-emerald-100 transition text-right">
-                        <div class="bg-emerald-500 p-3 rounded-lg text-white">🏗️</div>
-                        <div>
-                            <h3 class="font-bold text-emerald-900">فرص إعادة الإعمار</h3>
-                            <p class="text-[10px] text-emerald-700">فرص عمل ومشاريع ترميم الأحياء.</p>
+                    <div class="bg-white border rounded-xl overflow-hidden shadow-sm">
+                        <div class="h-32 bg-gray-200"></div>
+                        <div class="p-3">
+                            <h4 class="font-bold text-sm">بيت عربي مرمم - باب توما</h4>
+                            <p class="text-xs text-gray-500 mt-1">مناسب للسكن أو مكتب تجاري.</p>
+                            <div class="mt-2 flex justify-between items-center">
+                                <span class="text-green-600 font-bold text-xs">1,200,000 ل.س/شهر</span>
+                                <button class="bg-gray-800 text-white px-3 py-1 rounded text-[10px]">تواصل</button>
+                            </div>
                         </div>
-                    </button>
-
-                    <button onclick="showPage('gov')" class="flex items-center gap-4 bg-blue-50 p-4 rounded-xl border border-blue-100 hover:bg-blue-100 transition text-right">
-                        <div class="bg-blue-500 p-3 rounded-lg text-white">📑</div>
-                        <div>
-                            <h3 class="font-bold text-blue-900">الخدمات القنصلية</h3>
-                            <p class="text-[10px] text-blue-700">حجز مواعيد واستخراج وثائق رسمية.</p>
-                        </div>
-                    </button>
+                    </div>
                 </div>
             </section>
 
-            <!-- صفحة إعادة الإعمار -->
-            <section id="rebuild-page" class="page space-y-4">
-                <button onclick="showPage('home')" class="text-blue-600 text-sm mb-2 font-bold flex items-center gap-1">← العودة للرئيسية</button>
-                <h2 class="text-xl font-bold text-gray-800">مشاريع الإعمار</h2>
-                <div class="bg-white border rounded-xl p-4 shadow-sm border-r-4 border-r-emerald-500">
-                    <h3 class="font-bold">مشاريع السكن البديل</h3>
-                    <p class="text-xs text-gray-500 mt-1">مشاريع قيد الدراسة حالياً.</p>
+             <!-- قسم السيارات -->
+             <section id="cars" class="page space-y-4">
+                <h2 class="text-lg font-bold">سوق السيارات</h2>
+                <div class="bg-white p-4 border rounded-xl flex gap-4 items-center shadow-sm">
+                    <div class="w-20 h-16 bg-gray-100 rounded"></div>
+                    <div>
+                        <h4 class="font-bold text-sm">هيونداي أفانتي 2021</h4>
+                        <p class="text-[10px] text-gray-500">للايجار اليومي أو البيع</p>
+                        <p class="text-xs text-green-600 font-bold mt-1">اتصل لمعرفة السعر</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- صفحة الخدمات الحكومية -->
-            <section id="gov-page" class="page space-y-4">
-                <button onclick="showPage('home')" class="text-blue-600 text-sm mb-2 font-bold flex items-center gap-1">← العودة للرئيسية</button>
-                <h2 class="text-xl font-bold text-gray-800">الخدمات الرقمية</h2>
-                <p class="text-gray-500 text-sm">سيتم تفعيل الخدمات تباعاً.</p>
+            <!-- قسم السوق (بيع وشراء) -->
+            <section id="market" class="page space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">سوق المستعمل والجديد</h2>
+                    <button onclick="openAction('نشر إعلان بيع')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">+ أضف إعلان</button>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white border p-2 rounded-xl text-center">
+                        <div class="h-20 bg-gray-50 mb-2"></div>
+                        <p class="text-[10px] font-bold">أدوات منزلية</p>
+                        <p class="text-[9px] text-green-600">أسعار مخفضة</p>
+                    </div>
+                    <div class="bg-white border p-2 rounded-xl text-center">
+                        <div class="h-20 bg-gray-50 mb-2"></div>
+                        <p class="text-[10px] font-bold">مفروشات</p>
+                        <p class="text-[9px] text-green-600">شحن لكل المحافظات</p>
+                    </div>
+                </div>
             </section>
 
         </main>
 
-        <!-- Bottom Navigation -->
-        <nav class="fixed bottom-0 max-w-md w-full bg-white border-t flex justify-around p-3">
-            <button onclick="showPage('home')" class="flex flex-col items-center gap-1">
-                <span class="text-xl">🏠</span>
-                <span class="text-[10px]">الرئيسية</span>
+        <!-- Navigation Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center py-2 px-2 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+            <button onclick="showPage('home')" id="nav-home" class="nav-item active flex flex-col items-center flex-1 pt-2">
+                <span class="text-xl">🏛️</span>
+                <span class="text-[9px] font-bold">الرئيسية</span>
             </button>
-            <button onclick="showPage('rebuild')" class="flex flex-col items-center gap-1 text-gray-400">
-                <span class="text-xl">🏗️</span>
-                <span class="text-[10px]">الإعمار</span>
+            <button onclick="showPage('jobs')" id="nav-jobs" class="nav-item flex flex-col items-center flex-1 pt-2">
+                <span class="text-xl">💼</span>
+                <span class="text-[9px] font-bold">الوظائف</span>
             </button>
-            <button onclick="showPage('gov')" class="flex flex-col items-center gap-1 text-gray-400">
-                <span class="text-xl">📑</span>
-                <span class="text-[10px]">الخدمات</span>
+            <button onclick="showPage('real-estate')" id="nav-real-estate" class="nav-item flex flex-col items-center flex-1 pt-2">
+                <span class="text-xl">🏘️</span>
+                <span class="text-[9px] font-bold">العقارات</span>
+            </button>
+            <button onclick="showPage('market')" id="nav-market" class="nav-item flex flex-col items-center flex-1 pt-2">
+                <span class="text-xl">📦</span>
+                <span class="text-[9px] font-bold">السوق</span>
             </button>
         </nav>
 
-        <!-- رسالة منبثقة تلقائية (Toast) -->
-        <div id="toast">تم برمجة هذا التطبيق من قبل محمد صالح</div>
-
-        <!-- Custom Alert Modal -->
-        <div id="custom-alert" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-6 z-50">
-            <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center shadow-2xl">
-                <p id="alert-msg" class="text-gray-800 font-medium"></p>
-                <button onclick="closeAlert()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-xl w-full font-bold">حسناً</button>
+        <!-- Modal التفاعل -->
+        <div id="modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 z-[200]">
+            <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center">
+                <div id="modal-icon" class="text-4xl mb-3">✨</div>
+                <h3 id="modal-title" class="font-bold text-lg mb-2">إجراء جديد</h3>
+                <p id="modal-desc" class="text-xs text-gray-500 mb-6">هذه الميزة ستكون متاحة في النسخة النهائية المربوطة بقاعدة البيانات.</p>
+                <button onclick="closeModal()" class="bg-[#10b981] text-white w-full py-3 rounded-2xl font-bold">فهمت ذلك</button>
             </div>
         </div>
 
     </div>
 
     <script>
-        // تفعيل الرسالة المنبثقة عند فتح التطبيق
+        // إظهار التوست عند التحميل
         window.onload = function() {
             var x = document.getElementById("toast");
             x.className = "show";
             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
         };
 
+        // نظام التنقل بين الصفحات
         function showPage(pageId) {
+            // إخفاء كل الصفحات
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId + '-page').classList.add('active');
-            const title = document.getElementById('header-title');
-            if(pageId === 'home') title.innerText = 'سوريا الجديدة';
-            if(pageId === 'rebuild') title.innerText = 'إعادة الإعمار';
-            if(pageId === 'gov') title.innerText = 'الخدمات الحكومية';
+            // إظهار الصفحة المختارة
+            document.getElementById(pageId).classList.add('active');
+            
+            // تحديث حالة القائمة السفلية
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            const navBtn = document.getElementById('nav-' + pageId);
+            if (navBtn) navBtn.classList.add('active');
+
+            // التمرير للأعلى
+            window.scrollTo(0, 0);
         }
 
-        function alertBox(msg) {
-            document.getElementById('alert-msg').innerText = msg;
-            document.getElementById('custom-alert').classList.remove('hidden');
+        // فتح نافذة منبثقة للميزات غير المفعلة
+        function openAction(title) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal').classList.remove('hidden');
         }
 
-        function closeAlert() {
-            document.getElementById('custom-alert').classList.add('hidden');
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
         }
     </script>
 </body>
