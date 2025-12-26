@@ -1,134 +1,412 @@
-syrian_app/
-├── app.py           # الخادم الرئيسي
-├── database.db      # قاعدة البيانات
-├── templates/
-│   ├── index.html   # الصفحة الرئيسية
-│   ├── login.html   # صفحة تسجيل الدخول
-│   ├── dashboard.html # لوحة تحكم المالك والمشرفين
-│   └── add_post.html # صفحة إضافة منشور
-├── static/
-│   └── style.css    # ملف التنسيق
-└── README.md        # تعليمات التشغيل
--- database_setup.sql
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL,
-    role TEXT NOT NULL
+ import React, { useState, useEffect } from 'react';
+import { 
+  LayoutGrid, 
+  ShieldAlert, 
+  Stethoscope, 
+  Phone, 
+  Building2, 
+  Wallet, 
+  Users, 
+  PlusCircle, 
+  Settings, 
+  LogOut, 
+  Bell, 
+  Search,
+  ChevronRight,
+  ShieldCheck,
+  CreditCard,
+  MessageSquare,
+  Activity,
+  UserPlus
+} from 'lucide-react';
+
+// --- Components ---
+
+const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
+  const variants = {
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-800',
+    danger: 'bg-red-500 hover:bg-red-600 text-white',
+    success: 'bg-green-500 hover:bg-green-600 text-white',
+    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
+  };
+  return (
+    <button 
+      onClick={onClick} 
+      className={`px-4 py-2 rounded-xl transition-all duration-200 font-medium active:scale-95 flex items-center justify-center gap-2 ${variants[variant]} ${className}`}
+    >
+      {children}
+    </button>
+  );
+};
+
+const Card = ({ title, icon: Icon, children, className = "" }) => (
+  <div className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow ${className}`}>
+    <div className="flex items-center gap-3 mb-4">
+      <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+        <Icon size={24} />
+      </div>
+      <h3 className="text-xl font-bold text-gray-800">{title}</h3>
+    </div>
+    {children}
+  </div>
 );
 
-CREATE TABLE posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER,
-    content TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES users(id)
-);
+const Modal = ({ isOpen, onClose, title, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+          <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
+        </div>
+        <div className="p-6">{children}</div>
+      </div>
+    </div>
+  );
+};
 
-CREATE TABLE permissions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    role TEXT UNIQUE,
-    can_add_posts INTEGER DEFAULT 0,
-    can_delete_posts INTEGER DEFAULT 0,
-    can_manage_users INTEGER DEFAULT 0
-);
+// --- Main App ---
 
--- إضافة المالك الافتراضي
-INSERT INTO users (username, password, role) VALUES ('owner', '09962', 'owner');
+export default function App() {
+  const [view, setView] = useState('landing'); // landing, login, dashboard, admin
+  const [user, setUser] = useState(null); // { role: 'user' | 'admin' }
+  const [activeTab, setActiveTab] = useState('home');
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "تم تحديث إجراءات جواز السفر", time: "منذ ساعتين" },
+    { id: 2, text: "حوالة جديدة واردة باسمك", time: "منذ ٥ ساعات" }
+  ]);
+  const [modalContent, setModalContent] = useState(null);
 
--- إعداد الصلاحيات
-INSERT INTO permissions (role, can_add_posts, can_delete_posts, can_manage_users)
-VALUES 
-('owner', 1, 1, 1),
-('admin', 1, 1, 0),
-('user', 1, 0, 0);
+  const adminPasscode = "09962";
 
-# app.py
-from flask import Flask, render_template, request, redirect, session
-import sqlite3
+  // محاكاة تسجيل الدخول
+  const handleLogin = (role, code = "") => {
+    if (role === 'admin' && code !== adminPasscode) {
+      alert("رمز الدخول غير صحيح!");
+      return;
+    }
+    setUser({ role, name: role === 'admin' ? 'المدير العام' : 'مستخدم سوري' });
+    setView(role === 'admin' ? 'admin' : 'dashboard');
+  };
 
-app = Flask(__name__)
-app.secret_key = 'secret_key_here'
+  const openService = (title, content) => {
+    setModalContent({ title, content });
+  };
 
-DB = 'database.db'
+  // --- Views ---
 
-def get_db():
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
-    return conn
+  const LoginView = () => (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans" dir="rtl">
+      <div className="max-w-4xl w-full grid md:grid-cols-2 gap-8 bg-white rounded-[2rem] shadow-2xl overflow-hidden p-8">
+        <div className="flex flex-col justify-center space-y-6 border-l pl-8 border-gray-100">
+          <div className="text-center md:text-right">
+            <h2 className="text-3xl font-black text-blue-600 mb-2">تسجيل دخول المستخدم</h2>
+            <p className="text-gray-500">للوصول للخدمات، الإعلانات، والتفاعل</p>
+          </div>
+          <input type="text" placeholder="رقم الهاتف أو البريد" className="w-full p-4 bg-gray-50 rounded-2xl border-none ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+          <input type="password" placeholder="كلمة المرور" className="w-full p-4 bg-gray-50 rounded-2xl border-none ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
+          <Button onClick={() => handleLogin('user')} className="w-full py-4 text-lg">دخول كـ مستخدم</Button>
+          <div className="flex items-center gap-2 text-sm text-gray-400 justify-center">
+            <span>ليس لديك حساب؟</span>
+            <button className="text-blue-600 font-bold">إنشاء حساب جديد</button>
+          </div>
+        </div>
 
-@app.route('/')
-def index():
-    conn = get_db()
-    posts = conn.execute("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id").fetchall()
-    conn.close()
-    return render_template('index.html', posts=posts)
+        <div className="flex flex-col justify-center space-y-6 bg-slate-50 p-8 rounded-3xl">
+          <div className="text-center">
+            <ShieldCheck size={48} className="mx-auto text-slate-800 mb-4" />
+            <h2 className="text-2xl font-black text-slate-800 mb-2">إدارة المنصة</h2>
+            <p className="text-gray-500">خاص بمالك التطبيق والمشرفين</p>
+          </div>
+          <div className="space-y-4">
+            <input 
+              id="admin-code"
+              type="password" 
+              placeholder="أدخل رمز الوصول الخاص (09962)" 
+              className="w-full p-4 bg-white rounded-2xl border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-slate-800 outline-none text-center tracking-widest" 
+            />
+            <Button 
+              variant="secondary" 
+              className="w-full py-4 bg-slate-800 text-white hover:bg-slate-900"
+              onClick={() => {
+                const code = document.getElementById('admin-code').value;
+                handleLogin('admin', code);
+              }}
+            >
+              دخول الإدارة
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = get_db()
-        user = conn.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password)).fetchone()
-        conn.close()
-        if user:
-            session['user_id'] = user['id']
-            session['role'] = user['role']
-            return redirect('/dashboard')
-        return "خطأ في تسجيل الدخول"
-    return render_template('login.html')
+  const DashboardHeader = ({ isAdmin }) => (
+    <header className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-30 px-6 py-4 flex justify-between items-center" dir="rtl">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-200">SY</div>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">بوابة سوريا الخدمية</h1>
+          <span className="text-xs text-green-500 font-medium">● متصل الآن ({user?.role === 'admin' ? 'لوحة التحكم' : 'حساب مستخدم'})</span>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="hidden md:flex bg-gray-100 rounded-full px-4 py-2 items-center gap-2">
+          <Search size={18} className="text-gray-400" />
+          <input type="text" placeholder="ابحث عن خدمة..." className="bg-transparent outline-none text-sm w-48 text-right" />
+        </div>
+        <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-xl relative">
+          <Bell size={22} />
+          <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+        </button>
+        <button onClick={() => setView('login')} className="p-2 text-red-500 hover:bg-red-50 rounded-xl">
+          <LogOut size={22} />
+        </button>
+      </div>
+    </header>
+  );
 
-@app.route('/dashboard')
-def dashboard():
-    if 'role' not in session:
-        return redirect('/login')
-    conn = get_db()
-    posts = conn.execute("SELECT posts.*, users.username FROM posts JOIN users ON posts.user_id = users.id").fetchall()
-    conn.close()
-    return render_template('dashboard.html', posts=posts, role=session['role'])
+  const ServiceSection = ({ title, items }) => (
+    <div className="space-y-4">
+      <h2 className="text-2xl font-black text-gray-800 flex items-center gap-3">
+        <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
+        {title}
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {items.map((item, idx) => (
+          <button 
+            key={idx}
+            onClick={() => openService(item.label, item.content)}
+            className="group bg-white p-5 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all text-right flex flex-col justify-between h-40"
+          >
+            <div className={`p-3 rounded-2xl w-fit ${item.color || 'bg-blue-50 text-blue-600'}`}>
+              <item.icon size={28} />
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{item.label}</h4>
+              <p className="text-xs text-gray-400 mt-1">{item.desc || "خدمة إلكترونية فورية"}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
-@app.route('/add_post', methods=['GET', 'POST'])
-def add_post():
-    if 'role' not in session:
-        return redirect('/login')
-    if request.method == 'POST':
-        content = request.form['content']
-        conn = get_db()
-        conn.execute("INSERT INTO posts (user_id, content) VALUES (?, ?)", (session['user_id'], content))
-        conn.commit()
-        conn.close()
-        return redirect('/dashboard')
-    return render_template('add_post.html')
+  const AdminPanel = () => {
+    const [staff, setStaff] = useState([
+      { id: 1, name: "أحمد علي", role: "مشرف عام", access: "كامل" },
+      { id: 2, name: "ليلى حسن", role: "مدقق بلاغات", access: "محدود" },
+    ]);
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect('/')
-    
-if __name__ == '__main__':
-    app.run(debug=True)
+    return (
+      <div className="p-8 space-y-8" dir="rtl">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-slate-900 text-white p-6 rounded-[2rem] space-y-2">
+            <p className="opacity-70">إجمالي المستخدمين</p>
+            <h3 className="text-4xl font-black">12,450</h3>
+          </div>
+          <div className="bg-blue-600 text-white p-6 rounded-[2rem] space-y-2">
+            <p className="opacity-70">الحوالات اليوم</p>
+            <h3 className="text-4xl font-black">840</h3>
+          </div>
+          <div className="bg-green-500 text-white p-6 rounded-[2rem] space-y-2">
+            <p className="opacity-70">بلاغات منجزة</p>
+            <h3 className="text-4xl font-black">156</h3>
+          </div>
+          <div className="bg-orange-500 text-white p-6 rounded-[2rem] space-y-2">
+            <p className="opacity-70">طلبات قيد الانتظار</p>
+            <h3 className="text-4xl font-black">23</h3>
+          </div>
+        </div>
 
-<form method="post">
-  اسم المستخدم: <input name="username"><br>
-  كلمة المرور: <input type="password" name="password"><br>
-  <button type="submit">تسجيل الدخول</button>
-</form>
+        <Card title="إدارة المشرفين والصلاحيات" icon={UserPlus}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse">
+              <thead>
+                <tr className="border-b text-gray-400 text-sm">
+                  <th className="pb-4 font-medium">الاسم</th>
+                  <th className="pb-4 font-medium">الرتبة</th>
+                  <th className="pb-4 font-medium">الصلاحيات</th>
+                  <th className="pb-4 font-medium">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody>
+                {staff.map(s => (
+                  <tr key={s.id} className="border-b last:border-0">
+                    <td className="py-4 font-bold text-gray-700">{s.name}</td>
+                    <td className="py-4 text-blue-600">{s.role}</td>
+                    <td className="py-4 text-gray-500">{s.access}</td>
+                    <td className="py-4">
+                      <button className="text-red-500 hover:underline">سحب الصلاحية</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Button className="mt-6 w-full py-3" variant="outline">إضافة مشرف جديد</Button>
+        </Card>
 
-<h1>أهلاً بك في تطبيق السوريين</h1>
-{% for post in posts %}
-  <p><b>{{ post.username }}:</b> {{ post.content }}</p>
-{% endfor %}
-<a href="/login">تسجيل الدخول</a>
+        <div className="grid md:grid-cols-2 gap-8">
+          <Card title="الإعلانات النشطة" icon={LayoutGrid}>
+            <div className="space-y-3">
+              {[1, 2].map(i => (
+                <div key={i} className="flex justify-between items-center bg-gray-50 p-3 rounded-xl">
+                  <span className="text-sm font-medium">إعلان شقة سكنية - المزة</span>
+                  <div className="flex gap-2">
+                    <button className="text-xs text-green-600">قبول</button>
+                    <button className="text-xs text-red-600">حذف</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+          <Card title="إعدادات النظام العميقة" icon={Settings}>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="secondary" className="text-xs">تحديث الخوادم</Button>
+              <Button variant="secondary" className="text-xs">نسخ احتياطي</Button>
+              <Button variant="secondary" className="text-xs">تغيير رمز الدخول</Button>
+              <Button variant="danger" className="text-xs">إغلاق المنصة المؤقت</Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  };
 
-<h1>لوحة التحكم ({{ role }})</h1>
-<a href="/add_post">إضافة منشور</a> | <a href="/logout">تسجيل الخروج</a>
-<hr>
-{% for post in posts %}
-  <p><b>{{ post.username }}:</b> {{ post.content }}</p>
-{% endfor %}
-<form method="post">
-<textarea name="content" placeholder="أدخل محتوى المنشور"></textarea><br>
-<button type="submit">نشر</button>
-</form>
+  const UserDashboard = () => (
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-12 mb-20" dir="rtl">
+      
+      {/* Banner */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-700 to-indigo-800 rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl">
+        <div className="relative z-10 max-w-2xl">
+          <h2 className="text-3xl md:text-5xl font-black mb-4">أهلاً بك في منصتك الخدمية</h2>
+          <p className="text-blue-100 text-lg mb-8 leading-relaxed">كل ما تحتاجه من خدمات حكومية، صحية، ومصرفية في مكان واحد وبسهولة تامة.</p>
+          <div className="flex gap-4">
+            <Button variant="success" className="rounded-full px-8 py-3" onClick={() => setActiveTab('orders')}>متابعة طلباتي</Button>
+            <Button className="bg-white/10 backdrop-blur hover:bg-white/20 border-none rounded-full px-8 py-3">تنزيل إعلان جديد</Button>
+          </div>
+        </div>
+        <div className="absolute left-[-5%] bottom-[-20%] opacity-10 rotate-12">
+          <Building2 size={300} />
+        </div>
+      </div>
 
+      {/* Services Grid */}
+      <div className="space-y-16">
+        
+        {/* الحكومة والشرطة */}
+        <ServiceSection 
+          title="الخدمات الحكومية والأمنية"
+          items={[
+            { icon: Building2, label: "بوابة السجل المدني", desc: "إخراج قيد، بيان عائلي، زواج", content: "نماذج إلكترونية لطلب الوثائق مع خدمة التوصيل للمنزل" },
+            { icon: ShieldAlert, label: "قسم الشرطة الإلكتروني", color: "bg-red-50 text-red-600", content: "تقديم بلاغات، استعلام عن محضر، طلبات حسن سيرة وسلوك", desc: "بلاغات فورية وسرية" },
+            { icon: LayoutGrid, label: "جواز السفر السوري", content: "حجز دور، تجديد، إصدار فوري (تجريبي)", desc: "إدارة مواعيد المنصة" },
+            { icon: ShieldCheck, label: "خدمات التجنيد", content: "دفتر الخدمة، تأجيل دراسي، دفع بدلات", desc: "للشباب والمغتربين" },
+          ]}
+        />
+
+        {/* الاتصالات */}
+        <ServiceSection 
+          title="الاتصالات والتقنية"
+          items={[
+            { icon: Phone, label: "شحن رصيد فوراً", content: "سيريتل وام تي إن - كافة الباقات متوفرة" },
+            { icon: MessageSquare, label: "دفع فواتير الهاتف", content: "الهاتف الأرضي والإنترنت المنزلي ADSL" },
+            { icon: Activity, label: "خدمات الدعم الفني", content: "حل مشاكل الشبكة والإنترنت عن بعد" },
+          ]}
+        />
+
+        {/* الخدمات الطبية */}
+        <ServiceSection 
+          title="الخدمات الطبية والرعاية"
+          items={[
+            { icon: Stethoscope, label: "حجز عيادة طبية", color: "bg-green-50 text-green-600", content: "دليل الأطباء في كافة المحافظات مع تقييمات المرضى" },
+            { icon: PlusCircle, label: "صيدلية أونلاين", color: "bg-emerald-50 text-emerald-600", content: "طلب أدوية، استشارة صيدلانية، البحث عن أدوية مفقودة" },
+            { icon: Bell, label: "إسعاف وطوارئ", color: "bg-rose-50 text-rose-600", content: "اتصال سريع بأقرب مركز إسعاف أو منظمة الهلال الأحمر" },
+          ]}
+        />
+
+        {/* المالية والبنوك */}
+        <ServiceSection 
+          title="الخدمات المالية والمصرفية"
+          items={[
+            { icon: Wallet, label: "الحوالات المالية", color: "bg-amber-50 text-amber-700", content: "إرسال واستقبال الأموال محلياً ودولياً عبر وكلاء معتمدين" },
+            { icon: CreditCard, label: "إدارة الحساب البنكي", content: "كشف حساب، فتح حساب جديد، طلب بطاقة صراف" },
+            { icon: Users, label: "خدمات التجار والعملاء", content: "نظام إدارة المبيعات، دفع الكتروني للتجار، فواتير QR" },
+          ]}
+        />
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] font-sans selection:bg-blue-200">
+      {view === 'landing' && (
+        <div className="h-screen flex flex-col items-center justify-center p-6 text-center space-y-8 bg-white" dir="rtl">
+          <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center text-white text-4xl font-black shadow-2xl animate-bounce">SY</div>
+          <div className="space-y-4">
+            <h1 className="text-5xl font-black text-gray-900 leading-tight">المنصة الموحدة <br/><span className="text-blue-600">للخدمات السورية</span></h1>
+            <p className="text-gray-500 text-xl max-w-lg mx-auto leading-relaxed">أول منصة رقمية متكاملة تهدف لتسهيل حياة السوريين أينما كانوا عبر أحدث التقنيات.</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+            <Button onClick={() => setView('login')} className="flex-1 py-5 text-xl rounded-2xl shadow-xl shadow-blue-100">ابدأ الآن</Button>
+            <Button variant="outline" className="flex-1 py-5 text-xl rounded-2xl border-gray-200 text-gray-700 hover:bg-gray-50">تعرف علينا</Button>
+          </div>
+          <p className="text-gray-400 text-sm">الإصدار 2.5 - 2024</p>
+        </div>
+      )}
+
+      {view === 'login' && <LoginView />}
+
+      {(view === 'dashboard' || view === 'admin') && (
+        <>
+          <DashboardHeader isAdmin={view === 'admin'} />
+          <main className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {view === 'admin' ? <AdminPanel /> : <UserDashboard />}
+          </main>
+          
+          {/* Bottom Nav for Mobile */}
+          <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around p-4 md:hidden z-40 shadow-2xl rounded-t-3xl">
+            <button className="text-blue-600 flex flex-col items-center gap-1"><LayoutGrid size={24} /><span className="text-[10px] font-bold">الرئيسية</span></button>
+            <button className="text-gray-400 flex flex-col items-center gap-1"><PlusCircle size={24} /><span className="text-[10px]">إعلان</span></button>
+            <button className="text-gray-400 flex flex-col items-center gap-1"><MessageSquare size={24} /><span className="text-[10px]">دردشة</span></button>
+            <button className="text-gray-400 flex flex-col items-center gap-1"><Settings size={24} /><span className="text-[10px]">إعدادات</span></button>
+          </nav>
+        </>
+      )}
+
+      {/* Service Modal */}
+      <Modal 
+        isOpen={!!modalContent} 
+        onClose={() => setModalContent(null)} 
+        title={modalContent?.title}
+      >
+        <div className="space-y-6" dir="rtl">
+          <div className="p-4 bg-blue-50 text-blue-800 rounded-2xl border border-blue-100 leading-relaxed">
+            {modalContent?.content}
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700">البيانات المطلوبة</label>
+              <input type="text" placeholder="الاسم الكامل" className="w-full p-4 bg-gray-50 rounded-xl border-none ring-1 ring-gray-200 outline-none" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700">رقم الهاتف</label>
+              <input type="tel" placeholder="+963" className="w-full p-4 bg-gray-50 rounded-xl border-none ring-1 ring-gray-200 outline-none" />
+            </div>
+            <Button className="w-full py-4 mt-4" onClick={() => {
+              alert("تم استلام طلبك بنجاح! سيقوم فريقنا بالتواصل معك قريباً.");
+              setModalContent(null);
+            }}>
+              تأكيد وإرسال الطلب
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
+}
+
+       
