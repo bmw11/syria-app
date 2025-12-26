@@ -17,7 +17,6 @@
 
         .category-card {
             transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
         }
 
         .category-card:active {
@@ -36,37 +35,16 @@
             }
         }
 
-        /* Animation for the Programmer Credit */
-        @keyframes slideInUp {
-            from { transform: translateY(100%) translateX(-50%); opacity: 0; }
-            to { transform: translateY(0) translateX(-50%); opacity: 1; }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
         }
-
-        #creditPopup {
-            animation: slideInUp 0.6s ease-out forwards;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body class="pb-24">
-
-    <!-- Programmer Credit Popup -->
-    <div id="creditOverlay" class="fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-6">
-        <div id="creditPopup" class="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-blue-700"></div>
-            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-code text-3xl text-blue-700"></i>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">أهلاً بك في سوري كليك</h2>
-            <p class="text-gray-600 mb-6 leading-relaxed">
-                تمت برمجة وتطوير هذا التطبيق الشامل بكل فخر من قبل 
-                <br>
-                <span class="text-blue-700 font-bold text-xl">محمد صالح</span>
-            </p>
-            <button onclick="closeCredit()" class="w-full bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition">
-                استكشف الـ 126 خدمة
-            </button>
-        </div>
-    </div>
 
     <!-- Top Bar -->
     <header class="bg-blue-700 text-white p-4 sticky top-0 z-50 shadow-md">
@@ -77,74 +55,209 @@
                 </div>
                 <h1 class="text-xl font-bold">سوري كليك</h1>
             </div>
-            <div class="flex gap-4 text-sm font-light">بإشراف: محمد صالح</div>
+            <div class="flex gap-4">
+                <button class="hover:bg-blue-600 p-2 rounded-full"><i class="fas fa-search"></i></button>
+                <button class="hover:bg-blue-600 p-2 rounded-full relative">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-1 right-1 bg-red-500 w-2 h-2 rounded-full"></span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- Main Container -->
     <main class="container mx-auto p-4 space-y-8">
         
-        <!-- Search Section -->
-        <section class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+        <!-- Search & Quick Stats -->
+        <section class="bg-white p-4 rounded-2xl shadow-sm">
             <div class="relative mb-4">
                 <input type="text" placeholder="ابحث بين 126 خدمة سورية..." class="w-full bg-gray-100 p-3 pr-10 rounded-xl outline-none focus:ring-2 ring-blue-500">
                 <i class="fas fa-search absolute right-3 top-4 text-gray-400"></i>
             </div>
-            <div class="flex justify-around text-center text-xs text-gray-500">
-                <div class="px-2">
-                    <i class="fas fa-bolt text-yellow-500 mb-1"></i>
-                    <p>سريع</p>
-                </div>
-                <div class="px-2 border-x">
-                    <i class="fas fa-shield-halved text-blue-500 mb-1"></i>
-                    <p>آمن</p>
-                </div>
-                <div class="px-2">
-                    <i class="fas fa-check-double text-emerald-500 mb-1"></i>
-                    <p>موثوق</p>
-                </div>
+            <div class="flex justify-around text-center text-xs text-gray-500 font-medium">
+                <div><p class="text-blue-600 font-bold text-lg">42k</p><p>مستخدم نشط</p></div>
+                <div class="border-x px-4"><p class="text-emerald-600 font-bold text-lg">126</p><p>خدمة مفعلة</p></div>
+                <div><p class="text-orange-600 font-bold text-lg">14</p><p>محافظة</p></div>
             </div>
         </section>
 
-        <!-- Categories -->
+        <!-- Services Navigation -->
         <div id="app-sections">
-            <!-- Section 1: Gov & Law -->
+            <!-- Section 1: الخدمات الحكومية والقانونية (20 خدمة) -->
             <section class="mb-8">
-                <h2 class="font-bold text-lg flex items-center gap-2 mb-4">
-                    <i class="fas fa-gavel text-red-600"></i> المركز الحكومي والقانوني (20)
-                </h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-gavel text-red-600"></i> المركز الحكومي والقانوني
+                    </h2>
+                    <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">20 خدمة</span>
+                </div>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center" onclick="openService('حجز الهوية السورية')">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
                         <i class="fas fa-id-card text-blue-500 mb-2"></i>
                         <p class="text-[10px] font-medium leading-tight">حجز الهوية</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center" onclick="openService('تجديد جواز السفر')">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
                         <i class="fas fa-passport text-blue-500 mb-2"></i>
                         <p class="text-[10px] font-medium leading-tight">تجديد جواز</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center" onclick="openService('سجل مدني')">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
                         <i class="fas fa-file-invoice text-blue-500 mb-2"></i>
                         <p class="text-[10px] font-medium leading-tight">سجل مدني</p>
                     </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-scale-balanced text-blue-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">استشارة محامٍ</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-briefcase text-blue-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">تراخيص مهنية</p>
+                    </div>
                     <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
-                        <p class="text-[10px] text-gray-400">تحميل الكل</p>
+                        <p class="text-[10px] text-gray-400">+15 خدمة</p>
                     </div>
                 </div>
             </section>
 
-            <!-- Section 2: Health -->
+            <!-- Section 2: الصحة والطوارئ (18 خدمة) -->
             <section class="mb-8">
-                <h2 class="font-bold text-lg flex items-center gap-2 mb-4">
-                    <i class="fas fa-heartpulse text-emerald-600"></i> الصحة والطوارئ (18)
-                </h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-heartpulse text-emerald-600"></i> الصحة والطوارئ
+                    </h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded">18 خدمة</span>
+                </div>
                 <div class="service-grid">
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center" onclick="openService('إسعاف فوري')">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
                         <i class="fas fa-ambulance text-emerald-500 mb-2"></i>
                         <p class="text-[10px] font-medium leading-tight">إسعاف فوري</p>
                     </div>
-                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center" onclick="openService('صيدليات مناوبة')">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
                         <i class="fas fa-pills text-emerald-500 mb-2"></i>
-                        <p class="text-[10px] font-medium leading-tight">صيدليات</p>
+                        <p class="text-[10px] font-medium leading-tight">صيدليات مناوبة</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-droplet text-red-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">بنك الدم</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-user-md text-emerald-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">حجز عيادات</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-flask-vial text-emerald-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">مختبرات</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+13 خدمة</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: المال والتجارة (25 خدمة) -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-wallet text-orange-600"></i> المال، السوق والتحويلات
+                    </h2>
+                    <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">25 خدمة</span>
+                </div>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-money-bill-transfer text-orange-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">حوالات داخلية</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-coins text-orange-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">أسعار الصرف</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-store text-orange-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">سوق المستعمل</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-cart-shopping text-orange-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">طلبات التموين</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-chart-line text-orange-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">بورصة الذهب</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+20 خدمة</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: التعليم والتدريب (15 خدمة) -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-graduation-cap text-indigo-600"></i> التعليم والمهارات
+                    </h2>
+                    <span class="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded">15 خدمة</span>
+                </div>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-book text-indigo-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">كتب مدرسية</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-chalkboard-user text-indigo-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">مدرسين خصوصي</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-laptop-code text-indigo-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">دورات مهنية</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+12 خدمة</p>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Section 5: العقارات والنقل (20 خدمة) -->
+             <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-building text-slate-700"></i> السكن والنقل
+                    </h2>
+                    <span class="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded">20 خدمة</span>
+                </div>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-home text-slate-600 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">بيوت للإيجار</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-bus-simple text-slate-600 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">نقل بين المحافظات</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-car text-slate-600 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">تكسي داخلي</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+17 خدمة</p>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Section 6: المغتربين (18 خدمة) -->
+             <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-earth-americas text-blue-400"></i> شؤون المغتربين
+                    </h2>
+                    <span class="text-xs bg-blue-50 text-blue-400 px-2 py-1 rounded">18 خدمة</span>
+                </div>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-handshake-angle text-blue-400 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">البدل النقدي</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-file-signature text-blue-400 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">وكالات خارجية</p>
                     </div>
                     <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
                         <p class="text-[10px] text-gray-400">+16 خدمة</p>
@@ -152,56 +265,109 @@
                 </div>
             </section>
 
-            <!-- Placeholder for more grids to show depth -->
-             <div class="bg-gray-200 h-32 w-full rounded-2xl flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300">
-                مرر للأسفل لمشاهدة بقية القطاعات الـ 7 والـ 126 خياراً
-             </div>
+            <!-- Section 7: ترفيه ومجتمع (10 خدمات) -->
+            <section class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-bold text-lg flex items-center gap-2">
+                        <i class="fas fa-masks-theater text-pink-600"></i> ترفيه ومجتمع
+                    </h2>
+                    <span class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded">10 خدمات</span>
+                </div>
+                <div class="service-grid">
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-utensils text-pink-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">دليل المطاعم</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center">
+                        <i class="fas fa-calendar-check text-pink-500 mb-2"></i>
+                        <p class="text-[10px] font-medium leading-tight">فعاليات قادمة</p>
+                    </div>
+                    <div class="category-card bg-white p-3 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200 flex items-center justify-center">
+                        <p class="text-[10px] text-gray-400">+8 خدمات</p>
+                    </div>
+                </div>
+            </section>
         </div>
 
     </main>
 
-    <!-- Detailed Service Modal -->
+    <!-- Detailed Service Modal (Hidden by default) -->
     <div id="serviceModal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl">
             <div class="p-6">
-                <h3 id="modalTitle" class="text-xl font-bold text-gray-800 mb-4">عنوان الخدمة</h3>
-                <p class="text-sm text-gray-600 mb-6">هذه الخدمة جزء من نظام سوري كليك المطور بواسطة محمد صالح لتسهيل حياة السوريين.</p>
-                <button onclick="closeModal()" class="w-full bg-blue-700 text-white py-3 rounded-xl font-bold">بدء الخدمة</button>
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 id="modalTitle" class="text-xl font-bold text-gray-800">تفاصيل الخدمة</h3>
+                        <p id="modalCategory" class="text-sm text-blue-600">تصنيف الخدمة</p>
+                    </div>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-xl">
+                        <p class="text-sm text-gray-700">هذه الخدمة تتيح لك الوصول المباشر إلى قاعدة بيانات شاملة ومحدثة. يمكنك بدء المعاملة إلكترونياً وتتبع حالتها.</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-200">ابدأ الآن</button>
+                        <button class="bg-gray-100 text-gray-700 py-3 rounded-xl font-bold">حفظ للمفضلة</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t p-3 flex justify-around items-center z-50">
-        <button class="text-blue-700 flex flex-col items-center"><i class="fas fa-home"></i><span class="text-[10px]">الرئيسية</span></button>
-        <button class="text-gray-400 flex flex-col items-center"><i class="fas fa-th-large"></i><span class="text-[10px]">الأقسام</span></button>
-        <button class="text-gray-400 flex flex-col items-center"><i class="fas fa-plus-circle text-2xl"></i></button>
-        <button class="text-gray-400 flex flex-col items-center"><i class="fas fa-comments"></i><span class="text-[10px]">دردشة</span></button>
-        <button class="text-gray-400 flex flex-col items-center"><i class="fas fa-user"></i><span class="text-[10px]">حسابي</span></button>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-3 flex justify-around items-center z-50">
+        <button class="flex flex-col items-center gap-1 text-blue-600">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-[10px] font-bold">الرئيسية</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fas fa-th-large text-xl"></i>
+            <span class="text-[10px] font-bold">الخدمات</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fas fa-comments text-xl"></i>
+            <span class="text-[10px] font-bold">الدردشة</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fas fa-wallet text-xl"></i>
+            <span class="text-[10px] font-bold">محفظتي</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-gray-400">
+            <i class="fas fa-user-circle text-xl"></i>
+            <span class="text-[10px] font-bold">بروفيلي</span>
+        </button>
     </nav>
 
     <script>
-        // Function to close the Credit Popup
-        function closeCredit() {
-            const overlay = document.getElementById('creditOverlay');
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.4s ease';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 400);
-        }
+        // Interactive Elements
+        const cards = document.querySelectorAll('.category-card');
+        const modal = document.getElementById('serviceModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalCategory = document.getElementById('modalCategory');
 
-        // Functions for Modal
-        function openService(title) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('serviceModal').classList.remove('hidden');
-            document.getElementById('serviceModal').classList.add('flex');
-        }
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('p').innerText;
+                const sectionTitle = card.closest('section').querySelector('h2').innerText;
+                
+                modalTitle.innerText = title;
+                modalCategory.innerText = sectionTitle;
+                
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            });
+        });
 
         function closeModal() {
-            document.getElementById('serviceModal').classList.add('hidden');
-            document.getElementById('serviceModal').classList.remove('flex');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
     </script>
 </body>
 </html>
