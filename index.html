@@ -1,358 +1,76 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SyriaClick - التطبيق السوري المتكامل</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>تطبيق السوريين التجريبي</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;700&display=swap');
-        
-        :root {
-            --primary: #1e40af;
-            --secondary: #0f172a;
-            --accent: #ef4444;
-        }
-
-        body {
-            font-family: 'Noto Sans Arabic', sans-serif;
-            background-color: #f4f7fa;
-            color: var(--secondary);
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Navigation Logic */
-        .page { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
-        .page.active { display: block; opacity: 1; transform: translateY(0); }
-
-        /* Custom UI Elements */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .service-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .service-btn:active { transform: scale(0.9); }
-
-        .loader-spin {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Navigation Bar Shadow */
-        .nav-shadow {
-            box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+        body { font-family: Arial, sans-serif; direction: rtl; margin: 0; padding: 0; background: #f0f0f0; }
+        header { background: #3498db; color: white; padding: 1em; text-align: center; }
+        main { padding: 2em; }
+        button { padding: 0.5em 1em; margin: 0.5em 0; }
+        .hidden { display: none; }
+        .content-box { background: white; padding: 1em; margin-bottom: 1em; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1);}
     </style>
 </head>
-<body class="pb-32">
-
-    <!-- شاشة التحميل الأولية -->
-    <div id="splash-screen" class="fixed inset-0 bg-blue-800 z-[10000] flex flex-col items-center justify-center text-white">
-        <div class="mb-6 relative">
-            <div class="w-24 h-24 border-4 border-blue-400 border-t-white rounded-full loader-spin"></div>
-            <i class="fas fa-cube absolute inset-0 flex items-center justify-center text-3xl"></i>
-        </div>
-        <h1 class="text-3xl font-bold mb-2">سوري كليك</h1>
-        <p class="text-blue-200 animate-pulse">جاري تحضير 126 ميزة سورية...</p>
-    </div>
-
-    <!-- الهيدر -->
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-[1000] p-4 flex justify-between items-center border-b">
-        <div class="flex items-center gap-2">
-            <div class="bg-blue-600 p-2 rounded-xl text-white">
-                <i class="fas fa-grid-2"></i>
-            </div>
-            <h2 id="view-title" class="font-bold text-lg text-blue-900">الرئيسية</h2>
-        </div>
-        <div class="flex items-center gap-3">
-            <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center"><i class="fas fa-search"></i></button>
-            <button class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center"><i class="fas fa-bell"></i></button>
-        </div>
+<body>
+    <header>
+        <h1>تطبيق السوريين التجريبي</h1>
     </header>
-
-    <main class="p-4 max-w-2xl mx-auto">
-
-        <!-- الصفحة الرئيسية -->
-        <div id="page-home" class="page active space-y-6">
-            <!-- الترحيب -->
-            <div class="bg-gradient-to-r from-blue-700 to-blue-900 rounded-[2.5rem] p-6 text-white shadow-xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <p class="text-blue-200 text-sm mb-1">أهلاً بك في منصتك الشاملة</p>
-                    <h3 class="text-2xl font-bold mb-4">ماذا تريد أن تنجز اليوم؟</h3>
-                    <div class="flex gap-2">
-                        <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] backdrop-blur-md">تطوير: محمد صالح</span>
-                        <span class="bg-emerald-500/80 px-3 py-1 rounded-full text-[10px]">الخوادم متصلة</span>
-                    </div>
-                </div>
-                <i class="fas fa-bolt absolute -bottom-6 -left-6 text-9xl opacity-10"></i>
-            </div>
-
-            <!-- شبكة الأقسام الأساسية -->
-            <div class="grid grid-cols-2 gap-4">
-                <div onclick="showSection('gov')" class="glass-card p-5 rounded-3xl flex flex-col items-center gap-3 shadow-sm border border-gray-100 service-btn">
-                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-landmark"></i></div>
-                    <span class="font-bold text-sm">حكومة وقضاء</span>
-                </div>
-                <div onclick="showSection('money')" class="glass-card p-5 rounded-3xl flex flex-col items-center gap-3 shadow-sm border border-gray-100 service-btn">
-                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-wallet"></i></div>
-                    <span class="font-bold text-sm">مال وتحويلات</span>
-                </div>
-                <div onclick="showSection('expat')" class="glass-card p-5 rounded-3xl flex flex-col items-center gap-3 shadow-sm border border-gray-100 service-btn">
-                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-plane-arrival"></i></div>
-                    <span class="font-bold text-sm">المغتربين</span>
-                </div>
-                <div onclick="showSection('life')" class="glass-card p-5 rounded-3xl flex flex-col items-center gap-3 shadow-sm border border-gray-100 service-btn">
-                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center text-xl shadow-inner"><i class="fas fa-heart-pulse"></i></div>
-                    <span class="font-bold text-sm">حياة وصحة</span>
-                </div>
-            </div>
-
-            <!-- ميزة الـ 100 ميزة الجديدة -->
-            <div class="bg-white p-6 rounded-[2.5rem] border border-blue-100 shadow-sm" onclick="showSection('plus100')">
-                <div class="flex justify-between items-center mb-4">
-                    <h4 class="font-bold flex items-center gap-2"><i class="fas fa-rocket text-blue-600"></i> الـ 100 ميزة المتكاملة</h4>
-                    <span class="text-blue-600 text-xs font-bold">عرض الكل</span>
-                </div>
-                <div class="grid grid-cols-4 gap-3">
-                    <div class="flex flex-col items-center gap-1"><div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-xs"><i class="fas fa-sun"></i></div><span class="text-[8px]">طاقة</span></div>
-                    <div class="flex flex-col items-center gap-1"><div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-xs"><i class="fas fa-seedling"></i></div><span class="text-[8px]">زراعة</span></div>
-                    <div class="flex flex-col items-center gap-1"><div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-xs"><i class="fas fa-industry"></i></div><span class="text-[8px]">صناعة</span></div>
-                    <div class="flex flex-col items-center gap-1"><div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-xs"><i class="fas fa-graduation-cap"></i></div><span class="text-[8px]">تعليم</span></div>
-                </div>
-            </div>
+    <main>
+        <h2>مرحباً بك! 🌟</h2>
+        <div>
+            <label>أدخل كود المالك: </label>
+            <input type="password" id="ownerCode" placeholder="كود المالك">
+            <button onclick="loginOwner()">دخول المالك</button>
         </div>
 
-        <!-- صفحة عرض القسم (دايناميك) -->
-        <div id="page-section" class="page space-y-4">
-            <button onclick="navigate('home')" class="text-blue-700 font-bold flex items-center gap-2 mb-4">
-                <i class="fas fa-chevron-right"></i> عودة للرئيسية
-            </button>
-            <h3 id="section-title" class="text-xl font-bold px-2"></h3>
-            <div id="services-list" class="space-y-3">
-                <!-- الميزات تظهر هنا برمجياً -->
-            </div>
+        <div id="ownerPanel" class="hidden">
+            <h3>لوحة المالك</h3>
+            <button onclick="addContent()">إضافة محتوى</button>
+            <button onclick="addModerator()">إضافة مشرف</button>
+            <div id="ownerActions"></div>
         </div>
 
-        <!-- واجهة الخدمة النهائية (تعبئة البيانات) -->
-        <div id="page-service-final" class="page space-y-6">
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
-                <div id="final-svc-icon" class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg"></div>
-                <h2 id="final-svc-name" class="text-xl font-bold text-center mb-6"></h2>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-xs text-gray-400 mr-2 mb-1 block">الاسم الكامل</label>
-                        <input type="text" placeholder="أدخل اسمك كما في الهوية" class="w-full bg-gray-50 p-4 rounded-2xl border-none ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-400 mr-2 mb-1 block">الرقم الوطني / رقم التواصل</label>
-                        <input type="number" placeholder="أدخل الرقم هنا" class="w-full bg-gray-50 p-4 rounded-2xl border-none ring-1 ring-gray-200 focus:ring-2 focus:ring-blue-600 outline-none">
-                    </div>
-                    <div class="p-4 bg-blue-50 rounded-2xl text-[10px] text-blue-800 leading-relaxed">
-                        <i class="fas fa-shield-check ml-1"></i> يتم تشفير بياناتك ومعالجتها فوراً عبر خوادم محمد صالح السحابية لضمان السرعة والدقة.
-                    </div>
-                    <button onclick="processOrder()" id="order-btn" class="w-full bg-blue-700 text-white py-5 rounded-2xl font-bold text-lg shadow-lg service-btn">
-                        إتمام الطلب الآن
-                    </button>
-                </div>
-            </div>
+        <div id="contentArea">
+            <h3>المحتوى المتاح:</h3>
         </div>
-
-        <!-- صفحة الإشعارات -->
-        <div id="page-notif" class="page space-y-4">
-            <div class="text-center py-20">
-                <i class="fas fa-bell-slash text-5xl text-gray-200 mb-4"></i>
-                <p class="text-gray-400">لا توجد إشعارات حالياً</p>
-            </div>
-        </div>
-
     </main>
 
-    <!-- شريط التنقل السفلي -->
-    <nav class="fixed bottom-6 left-6 right-6 bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-2 flex justify-around items-center nav-shadow z-[2000] border border-white/50">
-        <button onclick="navigate('home', this)" class="nav-item flex flex-col items-center gap-1 py-2 px-6 rounded-full text-blue-600 bg-blue-50 font-bold transition-all">
-            <i class="fas fa-house"></i><span class="text-[9px]">الرئيسية</span>
-        </button>
-        <button onclick="navigate('notif', this)" class="nav-item flex flex-col items-center gap-1 py-2 px-6 rounded-full text-gray-400 transition-all">
-            <i class="fas fa-bell"></i><span class="text-[9px]">الإشعارات</span>
-        </button>
-        <button onclick="navigate('profile', this)" class="nav-item flex flex-col items-center gap-1 py-2 px-6 rounded-full text-gray-400 transition-all">
-            <i class="fas fa-circle-user"></i><span class="text-[9px]">حسابي</span>
-        </button>
-    </nav>
-
     <script>
-        // داتابيز الخدمات (الـ 126 ميزة)
-        const database = {
-            gov: {
-                title: "الحكومة والقضاء",
-                color: "bg-red-600",
-                items: [
-                    { name: "حجز الهوية السورية", icon: "id-card" },
-                    { name: "تجديد جواز السفر", icon: "passport" },
-                    { name: "خلاصة سجل عدلي (لا حكم عليه)", icon: "file-shield" },
-                    { name: "تثبيت زواج", icon: "ring" },
-                    { name: "إخراج قيد فردي", icon: "file-invoice" },
-                    { name: "بيان عائلي", icon: "users-rectangle" },
-                    { name: "سجل مدني إلكتروني", icon: "laptop-code" },
-                    { name: "تصحيح بيانات مدنية", icon: "edit" }
-                ]
-            },
-            money: {
-                title: "المال والتحويلات",
-                color: "bg-emerald-600",
-                items: [
-                    { name: "أسعار الصرف اللحظية", icon: "chart-line" },
-                    { name: "استلام حوالات ويسترن", icon: "money-bill-transfer" },
-                    { name: "فتح حساب بنكي إلكتروني", icon: "building-columns" },
-                    { name: "شحن رصيد سيريتل/MTN", icon: "mobile-screen" },
-                    { name: "دفع فواتير الكهرباء", icon: "bolt" },
-                    { name: "تداول عملات رقمية", icon: "bitcoin-sign" }
-                ]
-            },
-            expat: {
-                title: "شؤون المغتربين",
-                color: "bg-blue-600",
-                items: [
-                    { name: "دفع البدل النقدي", icon: "hand-holding-dollar" },
-                    { name: "تصديق وكالات خارجية", icon: "file-signature" },
-                    { name: "تجديد جواز سفر مستعجل", icon: "plane-up" },
-                    { name: "شحن بضائع لسوريا", icon: "truck-ramp-box" },
-                    { name: "حجز تذاكر طيران السورية", icon: "ticket" }
-                ]
-            },
-            life: {
-                title: "الصحة والخدمات اليومية",
-                color: "bg-orange-600",
-                items: [
-                    { name: "إسعاف فوري", icon: "ambulance" },
-                    { name: "حجز دور طبي", icon: "user-doctor" },
-                    { name: "صيدليات مناوبة", icon: "pills" },
-                    { name: "توصيل طلبات منزلية", icon: "basket-shopping" },
-                    { name: "أسعار المحروقات", icon: "gas-pump" }
-                ]
-            },
-            plus100: {
-                title: "الـ 100 ميزة الجديدة",
-                color: "bg-indigo-600",
-                items: [
-                    { name: "منظومات الطاقة الشمسية", icon: "sun" },
-                    { name: "دعم زراعي متكامل", icon: "seedling" },
-                    { name: "تراخيص صناعية", icon: "industry" },
-                    { name: "تنسيق جامعي", icon: "graduation-cap" },
-                    { name: "وظائف حكومية وخاصة", icon: "briefcase" },
-                    { name: "سوق عقارات سوريا", icon: "city" },
-                    { name: "مراكز تدريب مهني", icon: "tools" },
-                    { name: "اشتراكات إنترنت فائقة", icon: "wifi" }
-                ]
+        const ownerCodeCorrect = "09962";
+        const contentArea = document.getElementById('contentArea');
+        const ownerPanel = document.getElementById('ownerPanel');
+
+        function loginOwner() {
+            const code = document.getElementById('ownerCode').value;
+            if(code === ownerCodeCorrect) {
+                ownerPanel.classList.remove('hidden');
+                alert("تم تسجيل الدخول كمالك التطبيق!");
+            } else {
+                alert("كود غير صحيح!");
             }
-        };
+        }
 
-        // إخفاء شاشة التحميل بعد ثانيتين
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
-            }, 1500);
-        };
-
-        // نظام التنقل الذكي
-        function navigate(pageId, btn) {
-            // إخفاء كل الصفحات
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            // إظهار الصفحة المطلوبة
-            document.getElementById('page-' + pageId).classList.add('active');
-
-            // تحديث عنوان الهيدر
-            const titles = { home: 'الرئيسية', notif: 'الإشعارات', profile: 'حسابي' };
-            document.getElementById('view-title').innerText = titles[pageId] || 'سوري كليك';
-
-            // تحديث أزرار الناف بار
-            if (btn && btn.classList.contains('nav-item')) {
-                document.querySelectorAll('.nav-item').forEach(b => {
-                    b.classList.remove('text-blue-600', 'bg-blue-50', 'font-bold');
-                    b.classList.add('text-gray-400');
-                });
-                btn.classList.add('text-blue-600', 'bg-blue-50', 'font-bold');
-                btn.classList.remove('text-gray-400');
+        function addContent() {
+            const content = prompt("أدخل المحتوى الجديد:");
+            if(content) {
+                const box = document.createElement('div');
+                box.classList.add('content-box');
+                box.textContent = content;
+                contentArea.appendChild(box);
             }
-            window.scrollTo(0, 0);
         }
 
-        // عرض خدمات قسم معين
-        function showSection(key) {
-            const data = database[key];
-            const list = document.getElementById('services-list');
-            const title = document.getElementById('section-title');
-            
-            title.innerText = data.title;
-            list.innerHTML = "";
-
-            data.items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm service-btn";
-                div.onclick = () => openFinalService(item.name, item.icon, data.color);
-                div.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="${data.color} w-10 h-10 rounded-xl flex items-center justify-center text-white">
-                            <i class="fas fa-${item.icon}"></i>
-                        </div>
-                        <span class="font-bold text-sm">${item.name}</span>
-                    </div>
-                    <i class="fas fa-chevron-left text-gray-300"></i>
-                `;
-                list.appendChild(div);
-            });
-
-            navigate('section');
-        }
-
-        // فتح واجهة الخدمة النهائية
-        function openFinalService(name, icon, color) {
-            const iconBox = document.getElementById('final-svc-icon');
-            document.getElementById('final-svc-name').innerText = name;
-            iconBox.className = `w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg ${color} text-white`;
-            iconBox.innerHTML = `<i class="fas fa-${icon}"></i>`;
-            
-            navigate('service-final');
-        }
-
-        // محاكاة إتمام الطلب
-        function processOrder() {
-            const btn = document.getElementById('order-btn');
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-spinner loader-spin"></i> جاري الاتصال بالخادم...`;
-
-            setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check-circle"></i> تم الإرسال بنجاح!`;
-                btn.classList.replace('bg-blue-700', 'bg-emerald-600');
-                
-                showToast("تم استقبال طلبك بنجاح في أنظمة محمد صالح.");
-                
-                setTimeout(() => {
-                    navigate('home');
-                    // ريست للزر
-                    btn.disabled = false;
-                    btn.className = "w-full bg-blue-700 text-white py-5 rounded-2xl font-bold text-lg shadow-lg service-btn";
-                    btn.innerText = "إتمام الطلب الآن";
-                }, 2000);
-            }, 2000);
-        }
-
-        function showToast(msg) {
-            const t = document.createElement('div');
-            t.className = "fixed top-20 left-6 right-6 bg-white border-r-4 border-blue-600 p-4 rounded-2xl shadow-2xl z-[50000] text-sm font-bold animate-bounce";
-            t.innerHTML = `<i class="fas fa-info-circle text-blue-600 ml-2"></i> ${msg}`;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 4000);
+        function addModerator() {
+            const mod = prompt("أدخل اسم المشرف الجديد:");
+            if(mod) {
+                const actionDiv = document.getElementById('ownerActions');
+                const p = document.createElement('p');
+                p.textContent = `تم إضافة المشرف: ${mod}`;
+                actionDiv.appendChild(p);
+            }
         }
     </script>
 </body>
 </html>
-
-
