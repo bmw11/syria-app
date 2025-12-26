@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة سوريا الجديدة - محمد صالح</title>
+    <title>سوريا الجديدة - محمد صالح</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     
@@ -11,17 +11,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ===== ⚠️ تأكد من ملء هذه البيانات بدقة من Firebase Console =====
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC14Dt5V0Q1q7RYDre_TuYcuejoahhd478",
+        // ===== ⚠️ انسخ الإعدادات من كونسول فايبربيز وضعها هنا بدقة =====
+        const firebaseConfig = {
+              apiKey: "AIzaSyC14Dt5V0Q1q7RYDre_TuYcuejoahhd478",
   authDomain: "syriaapp-cf66d.firebaseapp.com",
   projectId: "syriaapp-cf66d",
   storageBucket: "syriaapp-cf66d.firebasestorage.app",
@@ -29,29 +21,25 @@ const firebaseConfig = {
   appId: "1:436974106636:web:a4b27a28fa51f3e80b9629",
   measurementId: "G-4T7GXLG5BH"
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        };
 
         try {
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
             window.db = db;
             window.dbFunctions = { collection, addDoc, onSnapshot, query, orderBy };
-            console.log("Firebase Connected Successfully");
-        } catch (error) {
-            console.error("Firebase Initialization Error:", error);
+            console.log("Firebase Init OK");
+        } catch (e) {
+            console.error("Firebase Init Error", e);
         }
     </script>
 
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #f0fdf4; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .page.active { display: block; }
         #toast {
-            visibility: hidden; min-width: 280px; background-color: #064e3b; color: #fff;
+            visibility: hidden; min-width: 280px; background-color: #064e3b; color: white;
             text-align: center; border-radius: 12px; padding: 16px; position: fixed;
             z-index: 500; left: 50%; top: 20px; transform: translateX(-50%);
         }
@@ -59,76 +47,153 @@ const analytics = getAnalytics(app);
         @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
     </style>
 </head>
-<body class="text-gray-900 overflow-x-hidden">
+<body class="text-gray-900">
 
     <div id="toast">تم برمجة هذا التطبيق من قبل محمد صالح</div>
 
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative flex flex-col">
         
-        <header class="bg-[#10b981] p-5 text-white shadow-lg sticky top-0 z-50 rounded-b-2xl">
+        <header class="bg-[#10b981] p-5 text-white shadow-lg sticky top-0 z-50">
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-xl font-bold">سوريا الجديدة 🇸🇾</h1>
-                    <p class="text-[10px] bg-black/20 px-2 py-0.5 rounded mt-1">المبرمج: محمد صالح</p>
+                    <p class="text-[10px] bg-black/20 px-2 py-0.5 rounded mt-1">بإشراف: محمد صالح</p>
                 </div>
-                <button onclick="askAdminCode()" class="bg-white/20 p-2 rounded-full">⚙️</button>
+                <button onclick="askAdminCode()" class="bg-white/20 p-2 rounded-full text-xs">إدارة ⚙️</button>
             </div>
-            <div id="connection-status" class="mt-2 text-[9px] text-green-100 flex items-center gap-1">
-                <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
-                جاري فحص الاتصال...
+            <div id="status-bar" class="mt-2 text-[9px] flex items-center gap-1">
+                <span id="status-dot" class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                <span id="status-text">جاري فحص الاتصال...</span>
             </div>
         </header>
 
         <main class="flex-1 p-4 pb-24">
-            <!-- الرئيسية -->
-            <section id="home" class="page active">
-                <div class="bg-green-50 p-3 rounded-xl border border-green-100 mb-4 text-center">
-                    <p class="text-green-700 font-bold text-xs italic">هذا تطبيق تجريبي</p>
+            <!-- قسم عرض الإعلانات -->
+            <section id="home" class="page active space-y-4">
+                <div class="bg-green-50 p-3 rounded-lg border border-green-100 text-center">
+                    <p class="text-[11px] text-green-700 font-bold italic">تطبيق تجريبي شامل لخدمة المواطن</p>
                 </div>
-                
-                <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                    📢 إعلانات حية (مباشر)
-                </h3>
-                
+
                 <div id="live-ads" class="space-y-3">
-                    <!-- سيتم تحميل المحتوى هنا -->
-                    <div class="text-center py-10 text-gray-400">
-                        <div class="animate-spin inline-block w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full mb-2"></div>
-                        <p class="text-xs">جاري سحب البيانات من السحابة...</p>
+                    <!-- جاري التحميل -->
+                    <div class="text-center py-10">
+                        <p class="text-xs text-gray-400">بانتظار وصول البيانات من السحابة...</p>
                     </div>
                 </div>
             </section>
 
-            <!-- لوحة المسؤول -->
+            <!-- لوحة التحكم -->
             <section id="admin" class="page space-y-4">
-                <div class="bg-red-600 text-white p-4 rounded-xl shadow-md">
-                    <h2 class="font-bold">لوحة التحكم 🛠️</h2>
-                    <p class="text-[10px] opacity-80 text-white">تحكم كامل بالإعلانات المنشورة</p>
+                <div class="bg-red-600 text-white p-4 rounded-xl shadow-lg">
+                    <h2 class="font-bold">لوحة المسؤول 🛠️</h2>
+                    <p class="text-[10px]">نشر إعلانات تظهر لجميع الهواتف</p>
                 </div>
-                <div class="bg-white border-2 border-dashed border-gray-200 p-4 rounded-xl space-y-3">
+                <div class="bg-white border p-4 rounded-xl space-y-3 shadow-sm">
                     <input id="ad-title" type="text" placeholder="عنوان الإعلان" class="w-full p-3 bg-gray-50 border rounded-lg text-sm">
                     <textarea id="ad-desc" placeholder="تفاصيل الإعلان..." class="w-full p-3 bg-gray-50 border rounded-lg text-sm h-24"></textarea>
                     <button id="post-btn" onclick="postToFirebase()" class="w-full bg-[#10b981] text-white py-4 rounded-xl font-bold shadow-lg active:scale-95 transition">
-                        نشر الإعلان الآن
+                        نشر الإعلان الآن 🚀
                     </button>
+                    <button onclick="showPage('home')" class="w-full text-gray-400 text-xs py-2">رجوع للرئيسية</button>
                 </div>
-                <button onclick="showPage('home')" class="w-full text-gray-500 text-xs">خروج</button>
             </section>
         </main>
 
-        <!-- القائمة السفلية -->
-        <nav class="fixed bottom-0 max-w-md w-full bg-white/90 backdrop-blur-md border-t flex justify-around p-3 z-50">
-            <button onclick="showPage('home')" class="flex flex-col items-center text-green-600">
-                <span class="text-xl">🏠</span>
-                <span class="text-[9px] font-bold">الرئيسية</span>
-            </button>
-            <button onclick="askAdminCode()" class="flex flex-col items-center text-gray-400">
-                <span class="text-xl">⚙️</span>
-                <span class="text-[9px] font-bold">المسؤول</span>
-            </button>
-        </nav>
+        <!-- كود المسؤول السري -->
+        <div id="code-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-[600]">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center">
+                <h3 class="font-bold mb-4">أدخل كود الدخول</h3>
+                <input id="admin-code" type="tel" placeholder="****" class="w-full p-3 border rounded-xl text-center text-2xl font-bold">
+                <button onclick="verifyCode()" class="w-full bg-[#10b981] text-white mt-4 py-3 rounded-xl font-bold">دخول</button>
+                <button onclick="closeCodeModal()" class="w-full text-gray-400 mt-4 text-xs">إلغاء</button>
+            </div>
+        </div>
+    </div>
 
-        <!-- نافذة الكود -->
-        <div id="code-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center
+    <script>
+        window.onload = function() {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(() => { toast.classList.remove("show"); }, 3000);
 
+            // التحقق من الجاهزية
+            let checkInterval = setInterval(() => {
+                if (window.db) {
+                    clearInterval(checkInterval);
+                    checkConnectivity();
+                }
+            }, 1000);
+        };
+
+        function checkConnectivity() {
+            document.getElementById('status-dot').className = "w-2 h-2 bg-green-500 rounded-full";
+            document.getElementById('status-text').innerText = "متصل بالسحابة ✅";
+            loadLiveAds();
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function askAdminCode() { document.getElementById('code-modal').classList.remove('hidden'); }
+        function closeCodeModal() { document.getElementById('code-modal').classList.add('hidden'); }
+
+        function verifyCode() {
+            if(document.getElementById('admin-code').value === "09962") {
+                closeCodeModal(); showPage('admin');
+            } else { alert("الكود خاطئ!"); }
+        }
+
+        async function postToFirebase() {
+            const title = document.getElementById('ad-title').value;
+            const desc = document.getElementById('ad-desc').value;
+            if(!title) return;
+
+            const btn = document.getElementById('post-btn');
+            btn.disabled = true; btn.innerText = "جاري النشر...";
+
+            try {
+                await window.dbFunctions.addDoc(window.dbFunctions.collection(window.db, "syria_ads"), {
+                    title: title,
+                    description: desc,
+                    createdAt: new Date().getTime()
+                });
+                alert("تم النشر بنجاح!");
+                document.getElementById('ad-title').value = "";
+                document.getElementById('ad-desc').value = "";
+                showPage('home');
+            } catch (e) {
+                alert("خطأ: تأكد من تفعيل Firestore في الموقع وقواعد الحماية.");
+                console.error(e);
+            } finally {
+                btn.disabled = false; btn.innerText = "نشر الإعلان الآن 🚀";
+            }
+        }
+
+        function loadLiveAds() {
+            const q = window.dbFunctions.query(window.dbFunctions.collection(window.db, "syria_ads"), window.dbFunctions.orderBy("createdAt", "desc"));
+            window.dbFunctions.onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('live-ads');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-center text-gray-400 text-[10px] py-10 uppercase">لا يوجد إعلانات حالياً</p>';
+                    return;
+                }
+                container.innerHTML = "";
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    container.innerHTML += `
+                        <div class="bg-white p-4 border rounded-xl shadow-sm border-r-4 border-green-500">
+                            <h4 class="font-bold text-sm">${data.title}</h4>
+                            <p class="text-[10px] text-gray-500 mt-1">${data.description || ''}</p>
+                        </div>`;
+                });
+            }, (err) => {
+                console.error(err);
+                document.getElementById('live-ads').innerHTML = '<p class="text-red-500 text-xs">خطأ في الاتصال، يرجى مراجعة القواعد (Rules).</p>';
+            });
+        }
+    </script>
+</body>
+</html>
 
